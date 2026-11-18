@@ -1,0 +1,22 @@
+{
+  "name": "army",
+  "displayName": "Army",
+  "version": "1.0.0",
+  "description": "A chief of staff that commands specialist units (intel, engineering, defense, legal, comms and more) as subagents, with cost-aware model routing, safety gates and local lessons-learned memory.",
+  "author": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "repository": "https://github.com/omer-yehuda/plugins",
+  "license": "MIT",
+  "keywords": [
+    "orchestration",
+    "subagents",
+    "multi-agent",
+    "security",
+    "code-review",
+    "research",
+    "legal"
+  ],
+  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/army"
+}

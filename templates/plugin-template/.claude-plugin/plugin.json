@@ -1,0 +1,10 @@
+{
+  "name": "my-plugin",
+  "version": "0.1.0",
+  "description": "What this plugin does, in one sentence.",
+  "author": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "license": "MIT"
+}

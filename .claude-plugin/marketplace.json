@@ -1,0 +1,27 @@
+{
+  "name": "omer-plugins",
+  "owner": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "metadata": {
+    "description": "A curated marketplace of production-grade Claude Code plugins by Omer Yehuda, featuring Army: multi-agent orchestration with specialist units, cost-aware model routing and safety gates."
+  },
+  "plugins": [
+    {
+      "name": "army",
+      "source": "./plugins/army",
+      "description": "A chief of staff that commands specialist units (intel, engineering, defense, legal, comms and more) as subagents, with cost-aware model routing, safety gates and local lessons-learned memory.",
+      "category": "productivity",
+      "keywords": [
+        "orchestration",
+        "subagents",
+        "multi-agent",
+        "security",
+        "code-review",
+        "research",
+        "legal"
+      ]
+    }
+  ]
+}
