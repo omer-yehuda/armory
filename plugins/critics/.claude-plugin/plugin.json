@@ -1,0 +1,21 @@
+{
+  "name": "critics",
+  "displayName": "The Critics' Table",
+  "version": "1.0.0",
+  "description": "Three independent critics (presentation, kitchen, recipe) taste your work before it ships, then a head critic awards up to 3 stars with a short fix-before-serving list. Re-taste after fixes to see stars go up.",
+  "author": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "repository": "https://github.com/omer-yehuda/plugins",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "review",
+    "quality",
+    "ux",
+    "performance",
+    "subagents"
+  ],
+  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/critics"
+}

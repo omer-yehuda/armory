@@ -1,0 +1,15 @@
+[project]
+name = "studio"
+version = "1.0.0"
+description = "Claude Code plugin: a film crew of AI agents that turns a topic into a vertical kinetic-typography explainer video"
+requires-python = ">=3.11"
+license = "MIT"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["skills/produce/scripts"]
+addopts = "-q --cov=studiokit --cov-report=term-missing:skip-covered --cov-fail-under=80"
+
+[tool.coverage.run]
+branch = true
+source = ["skills/produce/scripts/studiokit"]

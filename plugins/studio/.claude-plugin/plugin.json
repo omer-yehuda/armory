@@ -1,0 +1,14 @@
+{
+  "name": "studio",
+  "displayName": "Studio",
+  "version": "1.0.0",
+  "description": "A film crew of AI agents that turns a topic into a finished vertical explainer video: writer, director, test-screening critic and editor produce a 1080x1920 kinetic-typography MP4 with captions and upload metadata. Local rendering with Pillow and ffmpeg.",
+  "author": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "repository": "https://github.com/omer-yehuda/plugins",
+  "license": "MIT",
+  "keywords": ["video", "shorts", "explainer", "motion-graphics", "kinetic-typography", "agents", "captions"],
+  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/studio"
+}

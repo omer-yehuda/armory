@@ -1,0 +1,23 @@
+{
+  "title": "What is a Claude skill?",
+  "accent": "coral",
+  "meta": {
+    "titles": [
+      "What is a Claude skill? (in 30 seconds)",
+      "Teach Claude once, reuse it forever",
+      "Claude skills explained simply"
+    ],
+    "description": "A Claude skill is a small folder of instructions that Claude loads only when it needs it. Here is the idea in 30 seconds, no code.",
+    "hashtags": ["Claude", "AI", "Skills", "Productivity"]
+  },
+  "scenes": [
+    {"type": "title", "text": "What is a Claude skill?", "duration": 3, "theme": "light", "accent": "coral"},
+    {"type": "quote", "text": "A recipe card for Claude", "author": "in short", "duration": 3.5, "theme": "dark", "accent": "yellow", "transition": "zoom-punch"},
+    {"type": "bullets", "text": "Inside the folder", "items": ["Clear instructions", "Examples to copy", "Helpers it can run"], "duration": 5, "theme": "light", "accent": "blue"},
+    {"type": "stat", "value": 3, "label": "steps: read, pick, do", "duration": 3.5, "theme": "dark", "accent": "green", "transition": "fade"},
+    {"type": "compare", "left": {"title": "Without a skill", "items": ["Explain it again"]}, "right": {"title": "With a skill", "items": ["Say it once"]}, "duration": 4.5, "theme": "light", "accent": "purple"},
+    {"type": "title", "text": "Loaded only when needed", "duration": 3, "theme": "dark", "accent": "orange", "transition": "zoom-punch"},
+    {"type": "stat", "value": 100, "suffix": "%", "label": "yours to edit", "duration": 3.5, "theme": "light", "accent": "teal"},
+    {"type": "cta", "text": "Teach Claude once", "sub": "Follow for more", "duration": 3.5, "theme": "dark", "accent": "coral"}
+  ]
+}

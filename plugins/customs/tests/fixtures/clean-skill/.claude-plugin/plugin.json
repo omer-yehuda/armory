@@ -1,0 +1,8 @@
+{
+  "name": "clean-greeter",
+  "version": "1.0.0",
+  "description": "Says hello. Nothing else.",
+  "author": { "name": "Fixture Author" },
+  "repository": "https://example.invalid/clean-greeter",
+  "license": "MIT"
+}
