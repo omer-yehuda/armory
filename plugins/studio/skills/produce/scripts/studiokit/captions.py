@@ -1,8 +1,23 @@
 """SRT captions and upload metadata, derived from the storyboard. No Pillow needed."""
 
 
+def sentences(text: str) -> list[str]:
+    """Split narration into caption-sized pieces: sentences, long ones cut near 9 words."""
+    out, cur = [], []
+    for w in text.split():
+        cur.append(w)
+        if w.endswith((".", "?", "!", ":")) or (len(cur) >= 9 and w.endswith(",")) or len(cur) >= 12:
+            out.append(" ".join(cur))
+            cur = []
+    if cur:
+        out.append(" ".join(cur))
+    return out
+
+
 def _units(sc) -> list[str]:
-    """Caption cues for one scene, in reading order."""
+    """Caption cues for one scene, in reading order: the narration when there is one, else the screen text."""
+    if sc.say:
+        return sentences(sc.say)
     if sc.type == "stat":
         return [f"{sc.prefix}{sc.value:,g}{sc.suffix} {sc.label}"]
     if sc.type == "bullets":
@@ -16,13 +31,16 @@ def _units(sc) -> list[str]:
 
 
 def cues(sb) -> list[tuple[float, float, str]]:
-    """(start, end, text): each scene's duration is split evenly between its cues."""
+    """(start, end, text): each scene's duration is split between its cues by word count."""
     out = []
     for sc in sb.scenes:
         units = _units(sc)
-        share = sc.duration / max(1, len(units))
-        for i, u in enumerate(units):
-            out.append((sc.start + i * share, sc.start + (i + 1) * share, u))
+        words = [max(1, len(u.split())) for u in units]
+        t = sc.start
+        for u, n in zip(units, words):
+            d = sc.duration * n / sum(words)
+            out.append((t, t + d, u))
+            t += d
     return out
 
 
@@ -45,7 +63,7 @@ def metadata_md(sb, width: int, height: int, fps: int) -> str:
     texts = [s.text for s in sb.scenes if s.text]
     desc = m.get("description") or " ".join(texts[:1] + texts[-1:]).strip()
     tags = [t if t.startswith("#") else f"#{t}" for t in m.get("hashtags", [])]
-    if not any(t.lower() == "#shorts" for t in tags):
+    if sb.format == "short" and not any(t.lower() == "#shorts" for t in tags):
         tags.insert(0, "#Shorts")
     lines = ["# Upload metadata", "", "## Title options", *[f"{i}. {t}" for i, t in enumerate(titles, 1)], "",
              "## Description", desc, "", "## Hashtags", " ".join(tags), "",

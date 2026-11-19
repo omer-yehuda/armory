@@ -10,25 +10,35 @@ BASE_W, BASE_H = 1080, 1920
 # Safe area in 1080x1920 units: keeps text clear of the Shorts UI (title/buttons at the bottom,
 # search/camera icons at the top, action buttons at the right edge).
 SAFE_LEFT, SAFE_RIGHT, SAFE_TOP, SAFE_BOTTOM = 90, 90, 230, 420
+# Every format: base size, safe area (left, right, top, bottom) and the progress bar's y.
+# "wide" keeps a bigger right/bottom margin so a channel watermark in the corner never covers content.
+FORMATS = {
+    "short": {"size": (BASE_W, BASE_H), "safe": (SAFE_LEFT, SAFE_RIGHT, SAFE_TOP, SAFE_BOTTOM), "bar_y": 120},
+    "wide": {"size": (1920, 1080), "safe": (120, 170, 100, 150), "bar_y": 44},
+}
 
 
-def frame_size(scale: float) -> tuple[int, int]:
-    """Even dimensions (H.264 needs them) for a given scale of 1080x1920."""
-    return 2 * round(BASE_W * scale / 2), 2 * round(BASE_H * scale / 2)
+def frame_size(scale: float, fmt: str = "short") -> tuple[int, int]:
+    """Even dimensions (H.264 needs them) for a given scale of the format's base size."""
+    bw, bh = FORMATS[fmt]["size"]
+    return 2 * round(bw * scale / 2), 2 * round(bh * scale / 2)
 
 
 class Ctx:
     def __init__(self, scene, size: tuple[int, int]):
         self.w, self.h = size
-        self.s = self.w / BASE_W
-        self.sy = self.h / BASE_H
+        f = FORMATS[getattr(scene, "fmt", "short")]
+        self.wide = f is FORMATS["wide"]
+        self.s = self.w / f["size"][0]
+        self.sy = self.h / f["size"][1]
+        left, right, top, bottom = f["safe"]
         self.pal = PALETTES[scene.theme]
         self.accent = scene.accent
         self.bg, self.fg = self.pal["bg"], self.pal["fg"]
         self.img = Image.new("RGB", size, self.bg)
         self.d = ImageDraw.Draw(self.img)
-        self.x0, self.x1 = SAFE_LEFT * self.s, self.w - SAFE_RIGHT * self.s
-        self.y0, self.y1 = SAFE_TOP * self.sy, self.h - SAFE_BOTTOM * self.sy
+        self.x0, self.x1 = left * self.s, self.w - right * self.s
+        self.y0, self.y1 = top * self.sy, self.h - bottom * self.sy
         self.cx = self.w / 2
 
     @property
@@ -60,11 +70,13 @@ class Ctx:
                                  outline=outline or self.pal["line"], width=max(1, round(3 * self.s)))
 
 
-def progress_bar(img, progress: float, accent, theme: str) -> None:
+def progress_bar(img, progress: float, accent, theme: str, fmt: str = "short") -> None:
     """Thin video progress bar at the top, inside the horizontal safe area."""
     d, w = ImageDraw.Draw(img), img.size[0]
-    s = w / BASE_W
-    x0, x1, y, hh = SAFE_LEFT * s, w - SAFE_RIGHT * s, 120 * img.size[1] / BASE_H, max(3, 10 * s)
+    f = FORMATS[fmt]
+    s = w / f["size"][0]
+    left, right = f["safe"][0], f["safe"][1]
+    x0, x1, y, hh = left * s, w - right * s, f["bar_y"] * img.size[1] / f["size"][1], max(3, 10 * s)
     d.rounded_rectangle((x0, y, x1, y + hh), radius=hh / 2, fill=PALETTES[theme]["line"])
     fill_to = x0 + (x1 - x0) * max(0.02, min(1.0, progress))
     d.rounded_rectangle((x0, y, fill_to, y + hh), radius=hh / 2, fill=accent)

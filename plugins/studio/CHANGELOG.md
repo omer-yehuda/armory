@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0 (2026-11-20)
+
+- Wide format: `"format": "wide"` renders 1920x1080 with its own safe area (bottom-right kept clear for a channel watermark). Compare cards sit side by side in wide; contact sheets, captions and metadata follow the format (`#Shorts` only on Shorts).
+- `screen` scene: a real screenshot in a browser window; the whole picture fits first, then the camera eases into a `zoom` box, with an optional pointer that glides in and clicks (`cursor`, `click`) and a caption chip.
+- `link` scene: a link card where the address types itself out.
+- AI narration: `setup --voice` (consent first; pinned kokoro-onnx plus the SHA-256 verified Kokoro-82M model) and `voice storyboard.json`, which voices each scene's new `say` field, sets the durations, caches lines and attaches a mastered `voice.wav` (declick, 12 kHz low-pass, two-pass -14 LUFS in linear mode so pauses stay silent).
+- `audiocheck`: fails on pauses louder than -35 dBFS or more than 3 clicks a minute.
+- Captions follow the narration when a scene has `say`; cues are timed by word count.
+- `/studio:trend`: research a trending tool, film a real task in the browser, one script, a wide video and a Short.
+- Scene duration limit raised from 12 to 20 seconds (narrated wide scenes); the checker warns above 12 s on Shorts.
+
 ## 1.0.0 (2026-11-19)
 
 First release.

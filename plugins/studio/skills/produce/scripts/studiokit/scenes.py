@@ -69,21 +69,30 @@ def stat(c: Ctx, sc, t: float) -> None:
                               radius=bh / 2, fill=c.accent)
 
 
+def _compare_box(c: Ctx, k: int, gap: float) -> tuple:
+    """Card k (0 or 1): stacked in the vertical frame, side by side in the wide frame."""
+    if c.wide:
+        cw = (c.bw - gap) / 2
+        return c.x0 + k * (cw + gap), c.y0, c.x0 + k * (cw + gap) + cw, c.y1
+    ch = (c.bh - gap) / 2
+    return c.x0, c.y0 + k * (ch + gap), c.x1, c.y0 + k * (ch + gap) + ch
+
+
 def compare(c: Ctx, sc, t: float) -> None:
     gap = 120 * c.s
-    card_h = (c.bh - gap) / 2
     for k, (side, start, sign) in enumerate(((sc.left, 0.1, -1), (sc.right, 0.5, 1))):
         p = clamp((t - start) / 0.5)
         if p <= 0:
             continue
         dx = sign * (1 - ease_out_back(p)) * c.w
-        y = c.y0 + k * (card_h + gap)
-        c.card((c.x0 + dx, y, c.x1 + dx, y + card_h), radius=44)
+        bx0, y, bx1, y1 = _compare_box(c, k, gap)
+        card_h = y1 - y
+        c.card((bx0 + dx, y, bx1 + dx, y1), radius=44)
         strip = c.accent if k == 0 else c.pal["muted"]
-        c.d.rounded_rectangle((c.x0 + dx + 28 * c.s, y + 36 * c.s, c.x0 + dx + 44 * c.s, y + card_h - 36 * c.s),
+        c.d.rounded_rectangle((bx0 + dx + 28 * c.s, y + 36 * c.s, bx0 + dx + 44 * c.s, y1 - 36 * c.s),
                               radius=8 * c.s, fill=strip)
-        inner_w = c.bw - 120 * c.s
-        cx = c.x0 + 80 * c.s + inner_w / 2 + dx
+        inner_w = bx1 - bx0 - 120 * c.s
+        cx = bx0 + 80 * c.s + inner_w / 2 + dx
         head = tx.fit(side["title"], inner_w, card_h * 0.25, round(96 * c.s), round(tx.MIN_SIZE * c.s), 800)
         n = len(side["items"])
         item_h = (card_h - head.height - 90 * c.s) / n
@@ -99,7 +108,8 @@ def compare(c: Ctx, sc, t: float) -> None:
             top += f.height + 20 * c.s
     vs = clamp((t - 0.9) / 0.4)
     if vs > 0:
-        r, cy = 56 * c.s * ease_out_back(vs), c.y0 + card_h + gap / 2
-        c.d.ellipse((c.cx - r, cy - r, c.cx + r, cy + r), fill=c.accent)
-        c.d.text((c.cx, cy), "VS", font=tx.font(round(44 * c.s * clamp(ease_out_back(vs))), 900), anchor="mm",
+        r = 56 * c.s * ease_out_back(vs)
+        vx, cy = (c.x0 + c.bw / 2, c.y0 + c.bh / 2) if c.wide else (c.cx, c.y0 + (c.bh - gap) / 2 + gap / 2)
+        c.d.ellipse((vx - r, cy - r, vx + r, cy + r), fill=c.accent)
+        c.d.text((vx, cy), "VS", font=tx.font(round(44 * c.s * clamp(ease_out_back(vs))), 900), anchor="mm",
                  fill=(255, 255, 255) if sum(c.accent) < 400 else (20, 22, 26))

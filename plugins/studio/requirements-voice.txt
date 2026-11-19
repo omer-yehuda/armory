@@ -1,0 +1,6 @@
+# Optional AI narration (Kokoro-82M via kokoro-onnx, MIT; model Apache-2.0). Same pins as toon-shorts.
+# Installed only by `studio.py setup --voice --yes` after the user agrees.
+kokoro-onnx==0.6.1
+onnxruntime==1.31.1
+phonemizer==3.4.0
+espeakng-loader==0.2.4

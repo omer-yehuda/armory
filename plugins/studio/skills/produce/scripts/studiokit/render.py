@@ -36,7 +36,7 @@ def frames(sb, size, fps: int = 30):
             img = draw_scene(sc, t, size)
             if t < tl:
                 img = apply_transition(sc.transition, prev_last, img, t / tl)
-            progress_bar(img, (n + 1) / (total * fps), sc.accent, sc.theme)
+            progress_bar(img, (n + 1) / (total * fps), sc.accent, sc.theme, sc.fmt)
             yield img
         prev_last = draw_scene(sc, sc.duration, size)
 
@@ -47,7 +47,7 @@ def render(sb, out_dir: Path, scale: float = 1.0, fps: int = 30, audio: Path | N
     audio = audio or sb.audio
     if audio and fit_audio:
         sb = fit_to_audio(sb, probe_seconds(audio))
-    size = frame_size(scale)
+    size = frame_size(scale, sb.format)
     out_dir.mkdir(parents=True, exist_ok=True)
     video = safe_file(out_dir / "video.mp4", out_dir)
     srt, meta = safe_file(out_dir / "captions.srt", out_dir), safe_file(out_dir / "metadata.md", out_dir)

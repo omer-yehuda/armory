@@ -3,20 +3,21 @@ import difflib
 import json
 from pathlib import Path
 
-from .model import SCENE_TYPES, Scene, SpecError, Storyboard, default_duration
+from . import spec_media as media
+from .model import FORMAT_NAMES, SCENE_TYPES, Scene, SpecError, Storyboard, default_duration
 from .motion import TRANSITIONS
 from .safety import inside
 from .themes import DEFAULT_ACCENT, PALETTES, parse_accent
 
-COMMON = {"type", "duration", "theme", "accent", "transition"}
+COMMON = {"type", "duration", "theme", "accent", "transition", "say"}
 FIELDS = {
     "title": {"text"}, "bullets": {"text", "items"}, "stat": {"value", "label", "prefix", "suffix"},
     "compare": {"left", "right"}, "quote": {"text", "author"}, "image": {"image", "text"},
-    "cta": {"text", "sub"},
+    "screen": {"image", "text", "url", "zoom", "cursor", "click"}, "link": {"text", "sub"}, "cta": {"text", "sub"},
 }
-TOP = {"title", "scenes", "audio", "meta", "accent"}
-IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp"}
+TOP = {"title", "scenes", "audio", "meta", "accent", "format"}
 MAX_TEXT = 140
+MAX_SCENE_SECONDS = 20
 
 
 def _hint(key: str, allowed) -> str:
@@ -57,7 +58,7 @@ def _side(d, key, where, errs) -> dict:
             "items": _items(v.get("items"), f"{where}: '{key}.items'", errs, 1, 3)}
 
 
-def _scene(i, raw, base: Path, default_accent, errs) -> Scene | None:
+def _scene(i, raw, base: Path, default_accent, errs, fmt: str = "short") -> Scene | None:
     where = f"scene {i}"
     if not isinstance(raw, dict):
         errs.append(f"{where}: must be an object")
@@ -80,8 +81,9 @@ def _scene(i, raw, base: Path, default_accent, errs) -> Scene | None:
     trans = raw.get("transition", "cut" if i == 0 else "slide")
     if trans not in TRANSITIONS:
         errs.append(f"{where}: 'transition' must be one of {', '.join(TRANSITIONS)}" + _hint(str(trans), TRANSITIONS))
-    s = Scene(i, kind, 0.0, theme, accent or (0, 0, 0), trans)
-    s.text = _str(raw, "text", where, errs, required=kind in ("title", "quote", "cta"))
+    s = Scene(i, kind, 0.0, theme, accent or (0, 0, 0), trans, fmt=fmt)
+    s.say = media.say(raw, where, errs)
+    s.text = _str(raw, "text", where, errs, required=kind in ("title", "quote", "cta", "link"))
     s.author, s.sub = _str(raw, "author", where, errs), _str(raw, "sub", where, errs)
     if kind == "bullets":
         s.items = _items(raw.get("items"), f"{where}: 'items'", errs, 1, 4)
@@ -98,23 +100,15 @@ def _scene(i, raw, base: Path, default_accent, errs) -> Scene | None:
             s.prefix = s.suffix = ""
     if kind == "compare":
         s.left, s.right = _side(raw, "left", where, errs), _side(raw, "right", where, errs)
-    if kind == "image":
-        p = raw.get("image")
-        if not isinstance(p, str) or not p:
-            errs.append(f"{where}: 'image' must be a file path")
-        else:
-            s.image = (base / p).resolve()      # absolute paths are joined as-is by pathlib, so check containment
-            if Path(p).is_absolute() or not inside(s.image, base):
-                errs.append(f"{where}: image must be a path inside the storyboard folder (no absolute paths, no '..')")
-            elif s.image.suffix.lower() not in IMAGE_EXT:
-                errs.append(f"{where}: image must be one of {', '.join(sorted(IMAGE_EXT))}")
-            elif not s.image.is_file():
-                errs.append(f"{where}: image file not found: {s.image}")
+    if kind in ("image", "screen"):
+        s.image = media.image_path(raw, base, where, errs)
+    if kind == "screen":
+        media.screen(s, raw, where, errs)
     d = raw.get("duration")
     if d is None:
         s.duration = default_duration(kind, s.words(), len(s.items))
-    elif isinstance(d, bool) or not isinstance(d, (int, float)) or not 1.0 <= d <= 12:
-        errs.append(f"{where}: 'duration' must be a number of seconds between 1 and 12")
+    elif isinstance(d, bool) or not isinstance(d, (int, float)) or not 1.0 <= d <= MAX_SCENE_SECONDS:
+        errs.append(f"{where}: 'duration' must be a number of seconds between 1 and {MAX_SCENE_SECONDS}")
     else:
         s.duration = float(d)
     return s
@@ -145,11 +139,15 @@ def validate(data, base_dir: Path | str = ".") -> tuple[Storyboard | None, list,
     if not isinstance(raw, list) or not 1 <= len(raw) <= 30:
         errs.append("'scenes' must be a list of 1-30 scenes")
         raw = []
+    fmt = data.get("format", "short")
+    if fmt not in FORMAT_NAMES:
+        errs.append(f"'format' must be one of {', '.join(FORMAT_NAMES)} (short = 1080x1920, wide = 1920x1080)")
+        fmt = "short"
     default_accent = data.get("accent", DEFAULT_ACCENT)
     if parse_accent(default_accent) is None:
         errs.append("top-level 'accent' must be a color name or #RRGGBB")
         default_accent = DEFAULT_ACCENT
-    scenes = [_scene(i, r, base, default_accent, errs) for i, r in enumerate(raw)]
+    scenes = [_scene(i, r, base, default_accent, errs, fmt) for i, r in enumerate(raw)]
     audio = data.get("audio")
     if audio is not None and not (isinstance(audio, str) and (base / audio).is_file() and inside(base / audio, base)):
         errs.append(f"'audio' must be an existing file inside the storyboard folder: {audio}")
@@ -159,7 +157,7 @@ def validate(data, base_dir: Path | str = ".") -> tuple[Storyboard | None, list,
     t = 0.0
     for s in scenes:
         s.start, t = t, t + s.duration
-    sb = Storyboard(title, scenes, (base / audio).resolve() if audio else None, _meta(data.get("meta"), errs))
+    sb = Storyboard(title, scenes, (base / audio).resolve() if audio else None, _meta(data.get("meta"), errs), fmt)
     return (None, errs, []) if errs else (sb, [], lint(sb))
 
 

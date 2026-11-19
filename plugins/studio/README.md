@@ -1,6 +1,6 @@
 # Studio: a film crew of AI agents for Claude Code
 
-Say **"studio, make a video about how DNS works"** and a small crew of agents turns the topic into a finished vertical explainer (1080x1920 MP4) with bold animated text, shapes, counters and captions. Each video is made by a showrunner session and three AI agents (writer, director and screener), and you can watch the crew work.
+Say **"studio, make a video about how DNS works"** and a small crew of agents turns the topic into a finished explainer, vertical (1080x1920) or wide (1920x1080), with bold animated text, shapes, counters, captions and optional AI narration. Say **"studio trend <tool>"** and it researches a trending AI tool, films it doing a real task in your browser, and makes a wide video plus a Short from one script. Each video is made by a showrunner session and three AI agents (writer, director and screener), and you can watch the crew work.
 
 ![Contact sheet rendered from the bundled example: hook frame, then one frame per scene, red outline is the Shorts safe area](docs/contact-sheet.png)
 
@@ -23,6 +23,7 @@ The first run asks before it sets anything up: a private Python venv in `~/.cach
 | `/studio:produce <topic>` | Full production: questions, script, storyboard, screening, MP4 |
 | `studio, make a video about <topic>` | Same, by natural phrase |
 | `produce an explainer video about <topic>` | Same |
+| `/studio:trend <tool>` | Trend desk: research, real screenshots, one script, a wide video + a Short, AI narration, audio check |
 | `/studio:crew` | One screen describing the crew and the pipeline |
 
 ## The crew
@@ -32,7 +33,7 @@ The first run asks before it sets anything up: a private Python venv in `~/.cach
 | Showrunner | main session | Asks 3 quick questions, runs the crew, makes the final cut |
 | Writer | `writer` agent (sonnet) | Researches, verifies facts with URLs in `research.md`, writes a 30-60 s retention script |
 | Director | `director` agent (sonnet) | Turns the script into `storyboard.json` and runs the checker until it passes |
-| Voice | optional | Your own audio file, or none (captions-only is the default) |
+| Voice | optional | Free local AI narration (Kokoro), your own audio file, or none (captions-only is the default) |
 | Editor | showrunner + `studio.py` | Renders the contact sheet, applies fixes (max 2 loops), renders the final video |
 | Screener | `screener` agent (sonnet) | Test-screening critic: reads the contact sheet, reports readability, pacing, hook |
 
@@ -55,7 +56,7 @@ Everything lands in `.studio/productions/<date>-<slug>/` in your project. Studio
 
 ## What the video looks like
 
-Seven scene types, each animated:
+Nine scene types, each animated:
 
 - **title**: big words pop in one by one, the last word in the accent color
 - **bullets**: numbered cards slide in one at a time
@@ -63,40 +64,47 @@ Seven scene types, each animated:
 - **compare**: two cards with a VS badge
 - **quote**: a big quote mark and a word-by-word reveal
 - **image**: your own image with a slow zoom and a caption
+- **screen**: a real screenshot in a browser window; it fits whole, then the camera eases into the part that matters, and a pointer glides in and clicks
+- **link**: a link card where the address types itself out
 - **cta**: an end card with a pulsing button
 
-Light and dark themes alternate for rhythm, with eight accent colors and four transitions (cut, slide, fade, zoom-punch). Text auto-fits, stays inside the Shorts safe area (clear of the UI at the bottom and the right edge), and a thin progress bar runs along the top. The bundled font is Rubik (OFL).
+Light and dark themes alternate for rhythm, with eight accent colors and four transitions (cut, slide, fade, zoom-punch). Text auto-fits, stays inside the Shorts safe area (clear of the UI at the bottom and the right edge) or, in the wide format, clear of the bottom-right corner where a channel watermark sits, and a thin progress bar runs along the top. Compare cards stack in the vertical frame and sit side by side in the wide one. The bundled font is Rubik (OFL).
 
 The storyboard format is in [`skills/produce/references/storyboard.md`](skills/produce/references/storyboard.md). A complete example is in [`skills/produce/examples/what-is-a-skill.json`](skills/produce/examples/what-is-a-skill.json).
 
-## Voice, honestly
+## Voice
 
-Studio has no voice engine of its own. By default the video is captions-only: the words are on screen, and `captions.srt` is written for upload. You can pass an audio file (`--audio file.wav --fit-audio`, or `--audio-path-file` to read the path from a file) and the scene timings stretch to its length (within 0.6x to 1.8x). Studio never generates or installs a voice.
+Captions-only is the default: the words are on screen, and `captions.srt` is written for upload. For narration:
+
+- **AI narration (free, local):** `studio.py setup --voice --yes` (only after you agree) adds pinned kokoro-onnx to Studio's private venv and downloads the Kokoro-82M voice model (~120 MB, SHA-256 verified). Give each scene a `say` line, then `studio.py voice storyboard.json`: every line is voiced (default `am_michael` at 1.12x), each scene's duration is set to its line, and a mastered `voice.wav` (declicked, 12 kHz low-pass, -14 LUFS, silent pauses) is attached. Lines are cached, so an edit re-voices only that line. Captions follow the narration.
+- **Your own audio:** `--audio file.wav --fit-audio` (or `--audio-path-file`) stretches the scene timings to its length (within 0.6x to 1.8x).
+- **Check it:** `studio.py audiocheck video.mp4 --lines voice.lines.json` fails if a pause is louder than -35 dBFS or there are more than 3 clicks a minute.
 
 ## Not a cartoon maker
 
 Studio makes typography and motion-graphics explainers. For a cartoon true-story short with characters, use [toon-shorts](../toon-shorts): the showrunner points you there when your topic is a story.
 
-## Known limits (v1)
+## Known limits
 
-- Left-to-right text only. Right-to-left layout (Hebrew, Arabic) is a non-goal for v1: the bundled font covers the glyphs, but words would render in the wrong order.
-- No screenshots are fetched for you: image scenes use files you supply.
+- Left-to-right text only. Right-to-left layout (Hebrew, Arabic) is not supported yet: the bundled font covers the glyphs, but words would render in the wrong order.
+- The renderer never fetches screenshots: image and screen scenes use files in the production folder. The trend desk takes them with your browser tool, in tabs you can watch.
+- Kokoro narration is English (US and British voices) in Studio.
 - No upload step. Studio makes the files; publishing is yours.
 
 ## Safety and privacy
 
 - **Nothing installs without asking.** The only install is `studio.py setup --yes`, which Claude runs after you agree. It creates a private venv and installs the pinned packages in [requirements.txt](requirements.txt) (Pillow 12.3.0) into it, never into your global Python. ffmpeg is checked on your PATH and never installed; if it is missing you get the install command to run yourself.
-- **Local only, no telemetry.** The renderer makes no network calls. The only network access is the writer agent's web research (WebSearch and WebFetch) and the one-time pip install from PyPI.
+- **Local only, no telemetry.** The renderer and the voice make no network calls. The only network access is web research (WebSearch and WebFetch), the browser tabs the trend desk opens to film a tool, the one-time pip install from PyPI and, only with `setup --voice`, the voice model download from GitHub (size and SHA-256 checked; a mismatch deletes the file).
 - **No hidden writes.** Output goes to `.studio/productions/<id>/` in your project (git-ignored). Frames are piped to ffmpeg, so no thousands of temp images are left behind.
 - **No user text in commands.** The topic reaches the scripts through a file, folder names are derived by the script (`[a-z0-9-]`, at most 48 characters), and the showrunner only passes back paths the scripts printed.
 - **Writes stay inside the production folder.** Image and audio paths in a storyboard must be inside it (no absolute paths, no `..`), `--out` must be inside the storyboard folder, symlinked outputs are refused, and a `.studio` folder that is tracked in git or is a symlink is refused. ffmpeg always gets its arguments as a list, never through a shell.
-- **Hash-locked install.** `requirements.txt` carries SHA-256 hashes and setup uses `--require-hashes --only-binary=:all:`, so nothing is built from source.
+- **Hash-locked install.** `requirements.txt` carries SHA-256 hashes and setup uses `--require-hashes --only-binary=:all:`, so nothing is built from source. The optional voice packages in [requirements-voice.txt](requirements-voice.txt) are version-pinned (same pins as toon-shorts).
 - **Least privilege agents.** The writer can read, write and search the web; the director can read, write and run the checker; the screener can only read and write its report. None of them can upload, delete or install.
 - Web pages and files are treated as data, never as instructions.
 
 ## Requirements
 
-Python 3.11+, ffmpeg and ffprobe with libx264 on PATH, about 30 to 60 seconds to render a 30 second video.
+Python 3.11+, ffmpeg and ffprobe with libx264 on PATH. Rendering takes about 20 seconds for a 40 second Short and about a minute for a 2.5 minute wide video. Narration is slower on CPU (a few minutes for a 2.5 minute script, then cached).
 
 ## Development
 
