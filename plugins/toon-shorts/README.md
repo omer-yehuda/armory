@@ -2,17 +2,17 @@
 
 Say **"make me an animated short"** and Claude turns one conversation into a finished 1080x1920 cartoon video for YouTube Shorts, TikTok or Reels. It asks a few questions, pitches 10 true-story ideas, writes a retention script, voices it (free AI voice or your own recording), storyboards original toon characters on parallax sets, **looks at its own preview and fixes problems**, then renders the MP4.
 
-**[See it →](https://omer-yehuda.github.io/armory/toon-shorts/)**
+**[See it →](https://omer-yehuda.github.io/plugins/toon-shorts/)**
 
-[![Frames from the bundled example, last tile in Hebrew](../../docs/images/toon-shorts.png)](https://omer-yehuda.github.io/armory/toon-shorts/)
+[![Frames from the bundled example, last tile in Hebrew](../../docs/images/toon-shorts.png)](https://omer-yehuda.github.io/plugins/toon-shorts/)
 
 ## Install
 
 ```
-/plugin install toon-shorts --marketplace omer-yehuda/armory
+/plugin install toon-shorts --marketplace omer-yehuda/plugins
 ```
 
-On Claude Code versions earlier than 2.1.275, run `/plugin marketplace add omer-yehuda/armory` first, then `/plugin install toon-shorts@armory`.
+On Claude Code versions earlier than 2.1.275, run `/plugin marketplace add omer-yehuda/plugins` first, then `/plugin install toon-shorts@omer-plugins`.
 
 The first time you use it, Claude asks before setting up the engine: a private Python venv in `~/.cache/toon-shorts` with pinned packages, plus (optionally) the Kokoro voice model, ~120 MB and SHA-256 verified. Requires Python 3.11+.
 

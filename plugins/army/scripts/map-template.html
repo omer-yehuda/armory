@@ -290,9 +290,9 @@ footer p { margin: 4px 0; }
       </div>
       <div class="enlist">
         <h2>ENLIST</h2>
-        <div class="cmd"><code id="c1">/plugin install army --marketplace omer-yehuda/armory</code><button class="copy" data-copy="c1">Copy</button></div>
+        <div class="cmd"><code id="c1">/plugin install army --marketplace omer-yehuda/plugins</code><button class="copy" data-copy="c1">Copy</button></div>
         <div class="cmd"><code id="c2">raise the army &lt;your mission&gt;</code><button class="copy" data-copy="c2">Copy</button></div>
-        <p>Claude Code 2.1.275 or later. On older versions, add the marketplace first, then install <code>army@armory</code>.</p>
+        <p>Claude Code 2.1.275 or later. On older versions, add the marketplace first, then install <code>army@omer-plugins</code>.</p>
       </div>
     </div>
     <div class="board">
@@ -726,7 +726,7 @@ function renderCodes() {
 function setMode(m) { mode = m; document.querySelectorAll(".switch button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === m))); renderUnits(); if (openId) openFile(openId); }
 
 (function init() {
-  const repo = DATA.repository || "https://github.com/omer-yehuda/armory";
+  const repo = DATA.repository || "https://github.com/omer-yehuda/plugins";
   $("#ver").textContent = "v" + DATA.version; $("#repo").href = repo;
   const specs = DATA.units.reduce((n, u) => n + u.specialists.length, 0);
   $("#obIntro").textContent = `${DATA.units.length} units in ${ORDER.filter((g) => DATA.units.some((u) => u.group === g)).length} divisions, carrying ${specs} field manuals between them. Each unit is one subagent; a field manual is loaded only when a mission needs it. Stars show the model in the current rations: ★★★ Opus, ★★ Sonnet, ★ Haiku.`;

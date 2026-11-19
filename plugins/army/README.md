@@ -2,17 +2,17 @@
 
 Say **"raise the army"** and Claude becomes a Chief of Staff (HQ). It asks you its briefing questions once, writes an operation order, and dispatches specialist units as subagents, each on the cheapest model that can do the job. An Inspector General who never saw the work checks the result before you get it.
 
-**[Open the command center →](https://omer-yehuda.github.io/armory/)** Watch a mission play out, browse every unit, and read all 110 field manuals.
+**[Open the command center →](https://omer-yehuda.github.io/plugins/)** Watch a mission play out, browse every unit, and read all 110 field manuals.
 
-[![A mission playing out on the operations table](../../docs/images/mission.gif)](https://omer-yehuda.github.io/armory/)
+[![A mission playing out on the operations table](../../docs/images/mission.gif)](https://omer-yehuda.github.io/plugins/)
 
 ## Install
 
 ```
-/plugin install army --marketplace omer-yehuda/armory
+/plugin install army --marketplace omer-yehuda/plugins
 ```
 
-On Claude Code versions earlier than 2.1.275, run `/plugin marketplace add omer-yehuda/armory` first, then `/plugin install army@armory`.
+On Claude Code versions earlier than 2.1.275, run `/plugin marketplace add omer-yehuda/plugins` first, then `/plugin install army@omer-plugins`.
 
 ## Commands
 

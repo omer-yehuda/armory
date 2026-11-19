@@ -1,18 +1,18 @@
 <div align="center">
 
-<img src="docs/images/icon.png" width="84" alt="Armory icon">
+<img src="docs/images/icon.png" width="84" alt="Army icon">
 
-# Armory · Claude Code Plugins by Omer Yehuda
+# Omer Yehuda · Claude Code Plugins
 
 **A curated marketplace of production-grade plugins for [Claude Code](https://code.claude.com).**
 
-[![Validate](https://github.com/omer-yehuda/armory/actions/workflows/validate.yml/badge.svg)](https://github.com/omer-yehuda/armory/actions/workflows/validate.yml)
+[![Validate](https://github.com/omer-yehuda/plugins/actions/workflows/validate.yml/badge.svg)](https://github.com/omer-yehuda/plugins/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-d97757)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
 ![Python](https://img.shields.io/badge/python-3.11%2B-3776ab)
 
-**[Army command center (live)](https://omer-yehuda.github.io/armory/)** · [Toon Shorts](https://omer-yehuda.github.io/armory/toon-shorts/) · [Order of battle](https://omer-yehuda.github.io/armory/#units)
+**[Army command center (live)](https://omer-yehuda.github.io/plugins/)** · [Toon Shorts](https://omer-yehuda.github.io/plugins/toon-shorts/) · [Order of battle](https://omer-yehuda.github.io/plugins/#units)
 
 </div>
 
@@ -23,17 +23,17 @@
 Run this in Claude Code (v2.1.275 or later):
 
 ```
-/plugin install army --marketplace omer-yehuda/armory
-/plugin install toon-shorts --marketplace omer-yehuda/armory
+/plugin install army --marketplace omer-yehuda/plugins
+/plugin install toon-shorts --marketplace omer-yehuda/plugins
 ```
 
 <details>
 <summary>Older Claude Code versions</summary>
 
 ```
-/plugin marketplace add omer-yehuda/armory
-/plugin install army@armory
-/plugin install toon-shorts@armory
+/plugin marketplace add omer-yehuda/plugins
+/plugin install army@omer-plugins
+/plugin install toon-shorts@omer-plugins
 ```
 </details>
 
@@ -44,15 +44,13 @@ raise the army build a landing page for my habit-tracking app
 make me an animated short about the man who sold the Eiffel Tower
 ```
 
-To update later, run `/plugin marketplace update armory`.
-
-> Moved from `omer-yehuda/plugins` (marketplace `omer-plugins`). If you installed from there, run `/plugin marketplace add omer-yehuda/armory` once.
+To update later, run `/plugin marketplace update omer-plugins`.
 
 ## Plugin catalog
 
 | Plugin | What it does | Version |
 |---|---|---|
-| [**army**](plugins/army/README.md) | Multi-agent orchestration. A Chief of Staff commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, backed by 110 on-demand field manuals. Session-bound safety gates, least-privilege tool kits, cost-aware model routing and local lessons-learned memory. | 1.2.1 |
+| [**army**](plugins/army/README.md) | Multi-agent orchestration. A Chief of Staff commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, backed by 110 on-demand field manuals. Session-bound safety gates, least-privilege tool kits, cost-aware model routing and local lessons-learned memory. | 1.2.0 |
 | [**toon-shorts**](plugins/toon-shorts/README.md) | Animated short creator. Turns a true story into an original voiced, captioned 1080x1920 cartoon MP4 for Shorts, TikTok and Reels: 10 ideas, retention script, free AI voice or your own, toon characters on parallax sets, karaoke captions with Hebrew RTL, and a preview Claude reviews before rendering. | 1.0.0 |
 
 ---
@@ -63,7 +61,7 @@ To update later, run `/plugin marketplace update armory`.
 
 Say **"raise the army"** and Claude becomes a Chief of Staff. It asks its briefing questions once, writes an operation order, and dispatches specialist units in parallel, each on the most cost-effective model for its job. An independent Inspector General checks the result against your requirements before anything is reported back.
 
-[![A mission playing out in the command center](docs/images/mission.gif)](https://omer-yehuda.github.io/armory/)
+[![A mission playing out in the command center](docs/images/mission.gif)](https://omer-yehuda.github.io/plugins/)
 
 ```mermaid
 flowchart LR
@@ -88,9 +86,9 @@ flowchart LR
 
 | | |
 |---|---|
-| [![The operations table at the safety gate](docs/images/hero-gate.png)](https://omer-yehuda.github.io/armory/) | [![Order of battle with shoulder patches](docs/images/order-of-battle.png)](https://omer-yehuda.github.io/armory/#units) |
+| [![The operations table at the safety gate](docs/images/hero-gate.png)](https://omer-yehuda.github.io/plugins/) | [![Order of battle with shoulder patches](docs/images/order-of-battle.png)](https://omer-yehuda.github.io/plugins/#units) |
 | **The mission:** a live operations table. HQ deploys units, then holds at the safety gate for your authorization | **Order of battle:** 18 units as shoulder patches; the rank stars follow the Lean/Full rations switch |
-| [![Classified personnel file](docs/images/dossier.png)](https://omer-yehuda.github.io/armory/?unit=defense) | [![Rules of engagement](docs/images/rules.png)](https://omer-yehuda.github.io/armory/#roe) |
+| [![Classified personnel file](docs/images/dossier.png)](https://omer-yehuda.github.io/plugins/?unit=defense) | [![Rules of engagement](docs/images/rules.png)](https://omer-yehuda.github.io/plugins/#roe) |
 | **Personnel files:** each unit's assignment, kit, doctrine and every field manual | **Rules of engagement:** safety gates, local memory and token rations, stated honestly |
 
 ### Highlights

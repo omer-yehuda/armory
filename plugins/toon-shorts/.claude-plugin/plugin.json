@@ -7,8 +7,8 @@
     "name": "Omer Yehuda",
     "url": "https://github.com/omer-yehuda"
   },
-  "repository": "https://github.com/omer-yehuda/armory",
+  "repository": "https://github.com/omer-yehuda/plugins",
   "license": "MIT",
   "keywords": ["video", "shorts", "animation", "tiktok", "reels", "storytelling", "tts", "hebrew"],
-  "homepage": "https://github.com/omer-yehuda/armory/tree/main/plugins/toon-shorts"
+  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/toon-shorts"
 }
