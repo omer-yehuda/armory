@@ -1,17 +1,18 @@
 <div align="center">
 
-<img src="docs/images/icon.png" width="84" alt="Army icon">
+<img src="docs/images/icon.png" width="84" alt="Armory icon">
 
-# Omer Yehuda · Claude Code Plugins
+# Armory · Claude Code Plugins by Omer Yehuda
 
 **A curated marketplace of production-grade plugins for [Claude Code](https://code.claude.com).**
 
-[![Validate](https://github.com/omer-yehuda/plugins/actions/workflows/validate.yml/badge.svg)](https://github.com/omer-yehuda/plugins/actions/workflows/validate.yml)
+[![Validate](https://github.com/omer-yehuda/armory/actions/workflows/validate.yml/badge.svg)](https://github.com/omer-yehuda/armory/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-d97757)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
+![Python](https://img.shields.io/badge/python-3.11%2B-3776ab)
 
-**[Command center (live)](https://omer-yehuda.github.io/plugins/)** · [Order of battle](https://omer-yehuda.github.io/plugins/#units) · [Rules of engagement](https://omer-yehuda.github.io/plugins/#roe)
+**[Army command center (live)](https://omer-yehuda.github.io/armory/)** · [Toon Shorts](https://omer-yehuda.github.io/armory/toon-shorts/) · [Order of battle](https://omer-yehuda.github.io/armory/#units)
 
 </div>
 
@@ -22,15 +23,17 @@
 Run this in Claude Code (v2.1.275 or later):
 
 ```
-/plugin install army --marketplace omer-yehuda/plugins
+/plugin install army --marketplace omer-yehuda/armory
+/plugin install toon-shorts --marketplace omer-yehuda/armory
 ```
 
 <details>
 <summary>Older Claude Code versions</summary>
 
 ```
-/plugin marketplace add omer-yehuda/plugins
-/plugin install army@omer-plugins
+/plugin marketplace add omer-yehuda/armory
+/plugin install army@armory
+/plugin install toon-shorts@armory
 ```
 </details>
 
@@ -38,15 +41,19 @@ Restart Claude Code (or run `/reload-plugins`), then type:
 
 ```
 raise the army build a landing page for my habit-tracking app
+make me an animated short about the man who sold the Eiffel Tower
 ```
 
-To update later, run `/plugin marketplace update omer-plugins`.
+To update later, run `/plugin marketplace update armory`.
+
+> Moved from `omer-yehuda/plugins` (marketplace `omer-plugins`). If you installed from there, run `/plugin marketplace add omer-yehuda/armory` once.
 
 ## Plugin catalog
 
 | Plugin | What it does | Version |
 |---|---|---|
-| [**army**](plugins/army/README.md) | Multi-agent orchestration. A Chief of Staff commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, backed by 110 on-demand field manuals. Session-bound safety gates, least-privilege tool kits, cost-aware model routing and local lessons-learned memory. | 1.2.0 |
+| [**army**](plugins/army/README.md) | Multi-agent orchestration. A Chief of Staff commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, backed by 110 on-demand field manuals. Session-bound safety gates, least-privilege tool kits, cost-aware model routing and local lessons-learned memory. | 1.2.1 |
+| [**toon-shorts**](plugins/toon-shorts/README.md) | Animated short creator. Turns a true story into an original voiced, captioned 1080x1920 cartoon MP4 for Shorts, TikTok and Reels: 10 ideas, retention script, free AI voice or your own, toon characters on parallax sets, karaoke captions with Hebrew RTL, and a preview Claude reviews before rendering. | 1.0.0 |
 
 ---
 
@@ -56,7 +63,7 @@ To update later, run `/plugin marketplace update omer-plugins`.
 
 Say **"raise the army"** and Claude becomes a Chief of Staff. It asks its briefing questions once, writes an operation order, and dispatches specialist units in parallel, each on the most cost-effective model for its job. An independent Inspector General checks the result against your requirements before anything is reported back.
 
-[![A mission playing out in the command center](docs/images/mission.gif)](https://omer-yehuda.github.io/plugins/)
+[![A mission playing out in the command center](docs/images/mission.gif)](https://omer-yehuda.github.io/armory/)
 
 ```mermaid
 flowchart LR
@@ -81,9 +88,9 @@ flowchart LR
 
 | | |
 |---|---|
-| [![The operations table at the safety gate](docs/images/hero-gate.png)](https://omer-yehuda.github.io/plugins/) | [![Order of battle with shoulder patches](docs/images/order-of-battle.png)](https://omer-yehuda.github.io/plugins/#units) |
+| [![The operations table at the safety gate](docs/images/hero-gate.png)](https://omer-yehuda.github.io/armory/) | [![Order of battle with shoulder patches](docs/images/order-of-battle.png)](https://omer-yehuda.github.io/armory/#units) |
 | **The mission:** a live operations table. HQ deploys units, then holds at the safety gate for your authorization | **Order of battle:** 18 units as shoulder patches; the rank stars follow the Lean/Full rations switch |
-| [![Classified personnel file](docs/images/dossier.png)](https://omer-yehuda.github.io/plugins/?unit=defense) | [![Rules of engagement](docs/images/rules.png)](https://omer-yehuda.github.io/plugins/#roe) |
+| [![Classified personnel file](docs/images/dossier.png)](https://omer-yehuda.github.io/armory/?unit=defense) | [![Rules of engagement](docs/images/rules.png)](https://omer-yehuda.github.io/armory/#roe) |
 | **Personnel files:** each unit's assignment, kit, doctrine and every field manual | **Rules of engagement:** safety gates, local memory and token rations, stated honestly |
 
 ### Highlights
@@ -113,11 +120,30 @@ See the full documentation in [plugins/army/README.md](plugins/army/README.md).
 
 ---
 
+## Featured: Toon Shorts
+
+> One conversation, one finished cartoon short.
+
+Say **"make me an animated short"**. Claude asks a few questions, pitches 10 true-story ideas, writes a 30-60 second script built to hold attention, voices it, storyboards original toon characters on parallax sets, **checks its own preview frame by frame**, and renders the MP4 with a ready-to-paste title, description and hashtags.
+
+[![Frames from the bundled example, last tile in Hebrew](docs/images/toon-shorts.png)](plugins/toon-shorts/README.md)
+
+- **Original characters:** 12 moods, 11 poses, 6 skin tones, and a wardrobe of hats, outfits and 28 props.
+- **20 sets with depth:** three parallax layers, 5 times of day, landmarks and foreground overlays.
+- **Karaoke captions** that light up the spoken word, with correct **Hebrew right-to-left** layout.
+- **Voice:** free Kokoro AI voices in 6 languages, your own recording in any language (timing snaps to your pauses), or captions only.
+- **Safe by construction:** nothing installs without asking, dependencies are pinned, and the model is SHA-256 verified. No telemetry.
+
+See the full documentation in [plugins/toon-shorts/README.md](plugins/toon-shorts/README.md).
+
+---
+
 ## Privacy & safety
 
 - **No telemetry.** Plugins in this marketplace send nothing anywhere on their own.
 - **Local memory only.** Project memory lives in `.army/` inside your project, protected by its own `.gitignore` (`*`) and `.git/info/exclude`, so neither git nor `npm pack` includes it. Add `.army` to `.dockerignore` if you build images. Per-user settings live in Claude Code's plugin data directory.
 - **Human in the loop.** Irreversible actions require your approval by default.
+- **Toon Shorts installs nothing on its own.** Setup asks first, then installs into a private venv (`~/.cache/toon-shorts`) with pinned packages and a hash-verified voice model.
 - **Defensive security only.** The red-team specialist is restricted to your own project in a local or test environment.
 - The legal unit produces an automated risk review, **not legal advice**.
 
@@ -137,8 +163,14 @@ plugins/
     scripts/build-map.js          Generates the command-center map (fonts embedded)
     tests/                        Gate + lifecycle tests
     CHANGELOG.md
+  toon-shorts/
+    .claude-plugin/plugin.json    Plugin manifest
+    skills/toon-shorts/           SKILL.md · references · examples · engine (scripts/toonshorts)
+    tests/                        pytest suite (coverage gate 85%)
+    requirements*.txt             Pinned dependencies
+    CHANGELOG.md
 docs/                             Live site (GitHub Pages): interactive map + screenshots
-evals/                            Army vs. plain Claude on fixed missions
+evals/                            Each plugin vs. plain Claude on fixed missions
 templates/plugin-template/        Scaffold for new plugins
 tools/sync-army.js                Generates agent frontmatter and tables, CI drift check
 .github/workflows/validate.yml    CI: manifest validation + tests
@@ -168,7 +200,8 @@ Plugin names must not start with `claude-` or `anthropic-`, because those prefix
 ```bash
 node --test plugins/army/tests/*.test.js               # gate + lifecycle tests
 node tools/sync-army.js                       # regenerate files from units.json and standing orders
-node evals/run.js                             # army vs. plain Claude (needs a signed-in claude CLI)
+node evals/run.js                             # plugins vs. plain Claude (needs a signed-in claude CLI)
+(cd plugins/toon-shorts && python -m pytest)   # toon-shorts engine tests (pip install -r requirements-dev.txt)
 claude plugin validate .                      # validate the marketplace
 node plugins/army/scripts/build-map.js --out docs/index.html   # rebuild the live map after changing the army
 ```

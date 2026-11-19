@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 (2026-11-19)
+
+### Changed
+- The marketplace moved to `omer-yehuda/armory` (marketplace name `armory`). Repository and homepage links updated. If you installed `army@omer-plugins`, re-add it: `/plugin marketplace add omer-yehuda/armory`, then `/plugin install army@armory`.
+
 ## 1.2.0 (2026-11-19)
 
 Hardening release, based on an external design review.
