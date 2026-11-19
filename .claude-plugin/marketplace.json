@@ -5,7 +5,7 @@
     "url": "https://github.com/omer-yehuda"
   },
   "metadata": {
-    "description": "A curated marketplace of production-grade Claude Code plugins by Omer Yehuda, featuring Army: multi-agent orchestration with specialist units, cost-aware model routing and safety gates."
+    "description": "A curated marketplace of production-grade Claude Code plugins by Omer Yehuda: Army (multi-agent orchestration with specialist units, cost-aware routing and safety gates) and Toon Shorts (animated short creator: story to voiced, captioned cartoon MP4)."
   },
   "plugins": [
     {
@@ -21,6 +21,22 @@
         "code-review",
         "research",
         "legal"
+      ]
+    },
+    {
+      "name": "toon-shorts",
+      "source": "./plugins/toon-shorts",
+      "description": "Animated short creator: turns a true story into an original voiced, captioned 1080x1920 cartoon MP4 for Shorts/TikTok/Reels, with toon characters, parallax sets, karaoke captions (Hebrew RTL), and a self-reviewed preview.",
+      "category": "creative",
+      "keywords": [
+        "video",
+        "shorts",
+        "animation",
+        "tiktok",
+        "reels",
+        "storytelling",
+        "tts",
+        "hebrew"
       ]
     }
   ]

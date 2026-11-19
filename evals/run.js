@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /*
- * Army evals: runs each fixed mission twice, once with plain Claude Code (baseline) and once with the army
- * ("raise the army <prompt>"), then scores pass rate, tokens, cost, turns and time.
+ * Plugin evals: runs each fixed mission twice, once with plain Claude Code (baseline) and once with the plugin
+ * (army missions are prefixed with "raise the army"; a mission's `plugin` field picks another plugin),
+ * then scores pass rate, tokens, cost, turns and time. Checks get $EVAL_ROOT (this repository).
  *
  *   node evals/run.js [--only id,id] [--variants baseline,army] [--max-turns 60] [--model sonnet]
  *
@@ -35,24 +36,25 @@ function setup(m) {
 
 function run(m, variant) {
   const dir = setup(m);
-  const prompt = variant === 'army' ? `raise the army ${m.prompt}` : m.prompt;
+  const plugin = m.plugin || 'army';
+  const prompt = variant !== 'baseline' && plugin === 'army' ? `raise the army ${m.prompt}` : m.prompt;
   const args = ['-p', prompt, '--output-format', 'json', '--max-turns', maxTurns];
   if (model) args.push('--model', model);
-  if (variant === 'army') args.push('--plugin-dir', path.join(ROOT, 'plugins', 'army'));
+  if (variant !== 'baseline') args.push('--plugin-dir', path.join(ROOT, 'plugins', plugin));
   const t0 = Date.now();
   const r = spawnSync('claude', args, { cwd: dir, encoding: 'utf8', timeout: 30 * 60 * 1000, maxBuffer: 64 * 1024 * 1024 });
   let out = {};
   try { out = JSON.parse(r.stdout); } catch { out = { result: r.stdout || r.stderr || '' }; }
   const answer = String(out.result || '');
   const results = m.checks.map((c) => {
-    if (c.cmd) return spawnSync('sh', ['-c', c.cmd], { cwd: dir }).status === 0;
+    if (c.cmd) return spawnSync('sh', ['-c', c.cmd], { cwd: dir, env: { ...process.env, EVAL_ROOT: ROOT } }).status === 0;
     if (c.answer) return new RegExp(c.answer.replace(/^\(\?i\)/, ''), c.answer.startsWith('(?i)') ? 'i' : '').test(answer);
     if (c.answerNot) return !new RegExp(c.answerNot.replace(/^\(\?i\)/, ''), 'i').test(answer);
     return false;
   });
   const u = out.usage || {};
   return {
-    mission: m.id, variant, passed: results.filter(Boolean).length, total: results.length,
+    mission: m.id, variant: variant === 'army' ? plugin : variant, passed: results.filter(Boolean).length, total: results.length,
     tokens: (u.input_tokens || 0) + (u.output_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0),
     cost: out.total_cost_usd || 0, turns: out.num_turns || 0, seconds: Math.round((Date.now() - t0) / 1000), dir,
   };
@@ -70,8 +72,8 @@ for (const m of missions) {
 const lines = ['| Mission | Variant | Checks | Tokens | Cost (USD) | Turns | Time (s) |', '|---|---|---|---|---|---|---|',
   ...rows.map((r) => `| ${r.mission} | ${r.variant} | ${r.passed}/${r.total} | ${r.tokens.toLocaleString()} | ${r.cost.toFixed(3)} | ${r.turns} | ${r.seconds} |`)];
 const sum = (v, k) => rows.filter((r) => r.variant === v).reduce((n, r) => n + r[k], 0);
-for (const v of variants) lines.push(`| **total** | ${v} | ${sum(v, 'passed')}/${sum(v, 'total')} | ${sum(v, 'tokens').toLocaleString()} | ${sum(v, 'cost').toFixed(3)} | ${sum(v, 'turns')} | ${sum(v, 'seconds')} |`);
+for (const v of [...new Set(rows.map((r) => r.variant))]) lines.push(`| **total** | ${v} | ${sum(v, 'passed')}/${sum(v, 'total')} | ${sum(v, 'tokens').toLocaleString()} | ${sum(v, 'cost').toFixed(3)} | ${sum(v, 'turns')} | ${sum(v, 'seconds')} |`);
 fs.mkdirSync(path.join(__dirname, 'results'), { recursive: true });
 const file = path.join(__dirname, 'results', `${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.md`);
-fs.writeFileSync(file, `# Army eval results\n\nmax-turns ${maxTurns}${model ? ', model ' + model : ''}\n\n${lines.join('\n')}\n`);
+fs.writeFileSync(file, `# Plugin eval results\n\nmax-turns ${maxTurns}${model ? ', model ' + model : ''}\n\n${lines.join('\n')}\n`);
 console.log(lines.join('\n') + `\n\nSaved ${file}`);
