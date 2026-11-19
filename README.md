@@ -77,6 +77,11 @@ flowchart LR
     HQ -->|final report| U
 ```
 
+### Watch
+
+- [Stop Prompting Claude. Give It a Mission.](https://www.youtube.com/shorts/h9i1ZHay0JE) (YouTube Short)
+- [14 AI Units. 1 Command. (Claude Code Army)](https://www.youtube.com/shorts/2X-fzvEffys) (YouTube Short, recorded with v1.0's 14 units)
+
 ### See it
 
 | | |

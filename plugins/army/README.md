@@ -6,6 +6,15 @@ Say **"raise the army"** and Claude becomes a Chief of Staff (HQ). It asks you i
 
 [![A mission playing out on the operations table](../../docs/images/mission.gif)](https://omer-yehuda.github.io/plugins/)
 
+## Watch
+
+| Video | What it shows |
+|---|---|
+| [Stop Prompting Claude. Give It a Mission.](https://www.youtube.com/shorts/h9i1ZHay0JE) | Say "raise the army" and Claude Code becomes a Chief of Staff |
+| [14 AI Units. 1 Command. (Claude Code Army)](https://www.youtube.com/shorts/2X-fzvEffys) | The order of battle, unit by unit |
+
+Both Shorts are from [One Result](https://www.youtube.com/@OneResultDev) and were recorded with v1.0, which had 14 units. The army now has 18.
+
 ## Install
 
 ```
@@ -54,7 +63,7 @@ The settings commands run only when you type them. Claude cannot invoke them on 
 | `sales` | CLOSER | Offer & sales conversation, B2B & institutional sales, Negotiation officer, Customer support designer, Retention officer | scoped | sonnet | haiku |
 <!-- END ORDER OF BATTLE -->
 
-**Why this structure:** in Claude Code, only the main session can launch subagents. So each unit is one subagent, and its specialists are field manuals (`doctrine/`) that the unit reads only when its brief needs them. Adding a specialist costs nothing until it is used. **Kits are least-privilege:** research and planning units can read, search the web and write their report, but cannot edit code or run a shell. Recon has no shell. Defense and the Inspector General can't edit. Only engineering, rescue and logistics carry the full kit.
+**Why this structure:** each unit is one subagent, and its specialists are field manuals (`doctrine/`) that the unit reads only when its brief needs them. Claude Code can nest subagents, but every subagent starts with a fresh context, so one subagent per unit keeps both the cost and the HQ's reading load low. Adding a specialist costs nothing until it is used. **Kits are least-privilege:** research and planning units can read, search the web and write their report, but cannot edit code or run a shell. Recon has no shell. Defense and the Inspector General can't edit. Only engineering, rescue and logistics carry the full kit.
 
 ## How HQ runs a mission
 
