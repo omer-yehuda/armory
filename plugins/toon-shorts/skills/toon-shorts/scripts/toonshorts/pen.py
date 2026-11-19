@@ -11,7 +11,8 @@ from .paths import FONT
 def font(px: float, weight: int = 800) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     px = max(8, int(px))
     try:
-        f = ImageFont.truetype(str(FONT), px)
+        # BASIC layout: bidi.py already puts Hebrew in visual order; libraqm would reverse it again
+        f = ImageFont.truetype(str(FONT), px, layout_engine=ImageFont.Layout.BASIC)
         try:
             f.set_variation_by_axes([weight])
         except (OSError, AttributeError):

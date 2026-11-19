@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 (2026-11-19)
+
+### Fixed
+- Hebrew captions rendered backwards when Pillow is built with libraqm (the standard Linux wheels): `bidi.py` already puts the text in visual order, and raqm reversed it a second time. Caption fonts now load with Pillow's BASIC layout engine, so the result is the same on every platform.
+
 ## 1.0.0 (2026-11-19)
 
 First release. A clean-room rewrite of the idea behind an unlicensed "viral shorts" skill, which was audited and not installed (CAUTION: silent pip installs, an unverified model download, written for claude.ai paths). None of its code or prompts are reused.

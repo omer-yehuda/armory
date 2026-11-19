@@ -57,3 +57,13 @@ def test_ffmpeg_dying_early_reports_ffmpeg_error(tiny, tmp_path):
         os.chmod(ff_cmd, 0o755)
     with pytest.raises(RuntimeError, match="Unknown encoder"):
         render.video(tiny, tm, total, files, ff_cmd, str(tmp_path / "o.mp4"), fps=4, workers=1, tmp=str(tmp_path))
+
+
+def test_caption_font_uses_basic_layout_so_hebrew_is_not_reversed_twice():
+    # bidi.py already reorders Hebrew into visual order; with libraqm Pillow would reverse it again
+    from PIL import ImageFont
+    from toonshorts.pen import font
+    font.cache_clear()
+    f = font(40)
+    if isinstance(f, ImageFont.FreeTypeFont):
+        assert f.layout_engine == ImageFont.Layout.BASIC
