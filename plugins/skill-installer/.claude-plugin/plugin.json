@@ -1,0 +1,20 @@
+{
+  "name": "skill-installer",
+  "displayName": "Skill Installer",
+  "version": "1.0.0",
+  "description": "Install Claude skills straight from GitHub: browse a skills repo or a plugin marketplace, dry-run first, get a quick risk check, then install into ~/.claude/skills or the project's .claude/skills with an atomic copy and a backup on update. Adapted from OpenAI's Apache-2.0 Codex skill-installer.",
+  "author": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "repository": "https://github.com/omer-yehuda/plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "skills",
+    "installer",
+    "github",
+    "marketplace",
+    "package-manager"
+  ],
+  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/skill-installer"
+}

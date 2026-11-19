@@ -5,7 +5,7 @@
     "url": "https://github.com/omer-yehuda"
   },
   "metadata": {
-    "description": "A curated marketplace of tested Claude Code plugins by Omer Yehuda: Army (multi-agent orchestration), Toon Shorts (animated shorts), Code Court (decisions on trial), Customs (a first-filter scan of skills before you install), Bug ER (minimal-incision bug fixes), ATC (air traffic control for parallel sessions), Studio (AI film crew for explainer videos) and The Critics' Table (3-star review)."
+    "description": "A curated marketplace of tested Claude Code plugins by Omer Yehuda: Army (multi-agent orchestration), Toon Shorts (animated shorts), Code Court (decisions on trial), Customs (a first-filter scan of skills before you install), Bug ER (minimal-incision bug fixes), ATC (air traffic control for parallel sessions), Studio (AI film crew for explainer videos), The Critics' Table (3-star review) and Skill Installer (install skills from GitHub)."
   },
   "plugins": [
     {
@@ -123,6 +123,19 @@
         "ux",
         "performance",
         "subagents"
+      ]
+    },
+    {
+      "name": "skill-installer",
+      "source": "./plugins/skill-installer",
+      "description": "Install Claude skills straight from GitHub: browse a skills repo or a plugin marketplace, dry-run first, get a quick risk check, then install into ~/.claude/skills or the project with an atomic copy and a backup on update.",
+      "category": "productivity",
+      "keywords": [
+        "skills",
+        "installer",
+        "github",
+        "marketplace",
+        "package-manager"
       ]
     }
   ]
