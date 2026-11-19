@@ -1,0 +1,3 @@
+{ "name": "closed-source-desktop-app", "version": "1.0.0", "private": true, "license": "UNLICENSED",
+  "description": "A proprietary Electron app we sell.",
+  "dependencies": { "react": "^18.3.1", "readline-sync-gpl-fork": "1.0.0", "left-pad": "1.3.0" } }

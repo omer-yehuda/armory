@@ -1,10 +1,10 @@
 # Army: a chief of staff and specialist units for Claude Code
 
-Say **"raise the army"** and Claude becomes a Chief of Staff (HQ). It asks you its briefing questions once, then plans the mission and dispatches specialist units as subagents, each on the most cost-effective model for its job. It runs to completion on its own, and stops only at the safety gates.
+Say **"raise the army"** and Claude becomes a Chief of Staff (HQ). It asks you its briefing questions once, writes an operation order, and dispatches specialist units as subagents, each on the cheapest model that can do the job. An Inspector General who never saw the work checks the result before you get it.
 
-**[Explore the interactive map →](https://omer-yehuda.github.io/plugins/)** Browse every unit and read every playbook, try the mission simulator, and compare the Lean and Full model profiles.
+**[Open the command center →](https://omer-yehuda.github.io/plugins/)** Watch a mission play out, browse every unit, and read all 110 field manuals.
 
-[![Army interactive map](../../docs/images/map-light.png)](https://omer-yehuda.github.io/plugins/)
+[![A mission playing out on the operations table](../../docs/images/mission.gif)](https://omer-yehuda.github.io/plugins/)
 
 ## Install
 
@@ -19,91 +19,101 @@ On Claude Code versions earlier than 2.1.275, run `/plugin marketplace add omer-
 | Say / run | What happens |
 |---|---|
 | `raise the army <mission>` · `/army:raise <mission>` | HQ engages only the units the mission needs |
-| `raise the entire army <mission>` · `all units on board` · `/army:raise-all <mission>` | Turbo: every unit is engaged |
-| `/army:mode lean` · `/army:mode full` | Switch model profile (lean = Pro-friendly, the default; full = Max) |
-| `/army:gates on` · `/army:gates off` | Safety gates before irreversible actions (default: on) |
-| `/army:status` | Mode, gates, active mission, memory size |
-| `/army:map` | Generate the interactive army map locally (`.army/army-map.html`) |
+| `raise the entire army <mission>` · `all units on board` · `/army:raise-all` | Turbo: every unit, after you confirm a dispatch preview |
+| `/army:mode lean` · `/army:mode full` | Model profile. Lean (default, Pro-friendly) never uses Opus; full puts critical units on Opus |
+| `/army:gates on` · `/army:gates off` | Safety gates (default: on) |
+| `/army:status` | Mode, gates, active mission and phase, memory size |
+| `/army:map` | Generate the command-center map locally (`.army/army-map.html`, works offline) |
 
-You can also call a single unit directly: "send the defense unit to audit the auth flow".
+The settings commands run only when you type them. Claude cannot invoke them on its own, and their descriptions cost no context. You can also call one unit directly: "send the defense unit to audit the auth flow". A unit called directly runs on its lean model.
 
-## Order of battle: 18 units, 110 specialist playbooks
+## Order of battle
 
-| Unit | Specialists | full | lean |
-|---|---|---|---|
-| **HQ** (`raise`) | Chief of Staff: briefing, intent, operation order, dispatch, integration | main session | main session |
-| `recon` | Codebase mapping, cached per commit | haiku | haiku |
-| `ops` | Mission planner, architect, product manager, risk analyst, devil's advocate, innovation | opus | sonnet |
-| `intel` | Competitors, market, audience, tech scout, strategist, verifier, case studies, watch, due diligence, keywords, grants, user research, wargame | sonnet | sonnet |
-| `data` | Analyst, experiments & statistics, dashboards, data collector | sonnet | sonnet |
-| `comms` | UX copy, marketing copy, localization (Hebrew/RTL), plain language, proofreader, brand voice, outreach, review responder, press releases, video scripts | sonnet | sonnet |
-| `engineering` | Builder, test strategist, unit tests, optimizer, clean code, dependencies, bug hunter, QA explorer, compatibility, AI engineer, integrations, mobile | sonnet | sonnet |
-| `ux` | UX review, accessibility (WCAG 2.2), design consistency | sonnet | sonnet |
-| `defense` | AppSec, secrets, supply chain, threat model, red team (own project only), hardening, AI security, personal-data mapping, child safety, backup & recovery, account security | opus | sonnet |
-| `legal` | Licenses & copyright, privacy, terms & policies, accessibility law, trademarks, AI compliance, minors, consumer protection, advertising, defamation, contracts, disputes, platform terms | opus | sonnet |
-| `logistics` | CI/CD, deployment, infra cost, observability | sonnet | haiku |
-| `treasury` | Pricing & business model, cost forecast, cash-flow forecast, tax map, procurement, crowdfunding | sonnet | haiku |
-| `growth` | SEO, ASO, launch, analytics, social, email, partnerships, conversion, paid ads, PR, community, reviews | sonnet | haiku |
-| `sales` | Offers, B2B & institutional sales, negotiation, customer support, retention | sonnet | haiku |
-| `rescue` | Debugging, incident response | opus | sonnet |
-| `inspector-general` | Independent acceptance check, consistency checker, preflight checker | opus | sonnet |
-| `history` | Lessons learned, mission log, documentation | haiku | haiku |
-| `rnd` | Skill smith, playbook author, automation, proving ground (improves the army itself, with your approval) | opus | sonnet |
-| `special-ops` | Missions in domains no unit covers; workarounds when the army is stuck | opus | sonnet |
+<!-- BEGIN ORDER OF BATTLE -->
+**18 units, 110 specialist playbooks.** Generated from `units.json`.
 
-**Why this structure:** in Claude Code, only the main session can launch subagents. So each unit is one subagent, and its specialists are playbooks (`doctrine/`) that the unit reads only when its brief needs them. Adding a specialist costs nothing until it is used.
+| Unit | Callsign | Specialists | Tools | full | lean |
+|---|---|---|---|---|---|
+| `recon` | PATHFINDER | codebase map, cached until manifests or config change | scoped | haiku | haiku |
+| `ops` | OVERLORD | Mission planner, Architect, Risk analyst, Devil's advocate, Innovation officer, Product manager | scoped | opus | sonnet |
+| `inspector-general` | OVERWATCH | Consistency checker, Preflight checker | scoped | opus | sonnet |
+| `history` | ARCHIVE | Lessons keeper, Mission chronicler, Technical writer | scoped | sonnet | sonnet |
+| `rnd` | FORGE | Skill smith, Playbook author, Automation officer, Proving ground | scoped | opus | sonnet |
+| `special-ops` | GHOST | domains no unit covers; workarounds when stuck | scoped | opus | sonnet |
+| `intel` | SPECTRE | Competitor analyst, Market analyst, Audience listener, Tech scout, Strategist, Verifier, Case-study researcher, Watch officer, Due-diligence investigator, Keyword researcher, Grants & competitions scout, User-research planner, Wargame officer | scoped | sonnet | sonnet |
+| `data` | ORACLE | Data analyst, Experiments & statistics, Dashboard & report designer, Data collector | scoped | sonnet | sonnet |
+| `engineering` | IRONWORKS | Builder, Test strategist, Unit-test specialist, Optimizer, Clean-code reviewer, Dependency specialist, Bug hunter, QA explorer, Compatibility checker, AI engineer, Integrations engineer, Mobile developer | all | sonnet | sonnet |
+| `ux` | PRISM | UX reviewer, Accessibility specialist, Design-consistency specialist | scoped | sonnet | sonnet |
+| `logistics` | SUPPLY LINE | CI/CD engineer, Deployment engineer, Infrastructure & cost, Observability | all | sonnet | haiku |
+| `rescue` | MEDEVAC | Debugger, Incident commander | all | opus | sonnet |
+| `defense` | AEGIS | AppSec specialist, Secrets hunter, Supply-chain specialist, Threat modeler, Red team, Hardening officer, AI security officer, Personal-data mapper, Child-safety officer, Backup & recovery officer, Account security officer | scoped | opus | sonnet |
+| `legal` | TRIBUNAL | Licenses & copyright, Privacy counsel, Terms & policies, Accessibility law, Trademarks & naming, AI & platform compliance, Minors counsel, Consumer-protection counsel, Advertising counsel, Reputation & defamation counsel, Contract reviewer, Disputes counsel, Platform-terms officer | scoped | opus | sonnet |
+| `comms` | MEGAPHONE | UX copywriter, Marketing copywriter, Localization editor, Plain-language editor, Proofreader, Brand-voice keeper, Outreach writer, Review & complaint responder, Press-release writer, Video scriptwriter | scoped | sonnet | sonnet |
+| `growth` | WILDFIRE | SEO specialist, ASO specialist, Launch planner, Analytics specialist, Social media specialist, Email marketing specialist, Partnerships officer, Conversion specialist, Paid ads specialist, PR officer, Community manager, Reviews specialist | scoped | sonnet | haiku |
+| `treasury` | VAULT | Pricing & business model, Cost forecaster, Forecaster, Tax mapper, Procurement officer, Crowdfunding officer | scoped | sonnet | haiku |
+| `sales` | CLOSER | Offer & sales conversation, B2B & institutional sales, Negotiation officer, Customer support designer, Retention officer | scoped | sonnet | haiku |
+<!-- END ORDER OF BATTLE -->
+
+**Why this structure:** in Claude Code, only the main session can launch subagents. So each unit is one subagent, and its specialists are field manuals (`doctrine/`) that the unit reads only when its brief needs them. Adding a specialist costs nothing until it is used. **Kits are least-privilege:** research and planning units can read, search the web and write their report, but cannot edit code or run a shell. Recon has no shell. Defense and the Inspector General can't edit. Only engineering, rescue and logistics carry the full kit.
 
 ## How HQ runs a mission
 
-1. **Muster:** load the mode, the gates and this project's lessons.
-2. **Briefing:** all questions in one round, then autonomous.
-3. **Recon:** codebase map, cached per commit.
-4. **Operation order:** commander's intent, definition of done, the units, the phases and the models. Missions are tiered:
-   - An **operation** stays lightweight.
-   - A **campaign** adds checkpoints after each phase, and runs on its own `army/<missionId>` branch.
-5. **Dispatch:** independent units run in parallel. Every brief carries the intent.
-6. **Safety gates:** irreversible actions wait for your approval.
-7. **Integrate:** RED findings from defense or legal loop back for a fix. A unit that returns thin work gets one targeted re-brief.
-8. **Inspection:** an Inspector General who never saw the work judges the result cold.
-9. **After-action:** History updates the lessons, so the next mission starts smarter.
+1. **Muster.** `army.js start` binds the mission to your session. It loads your mode and gates, and prints the unit→model map, which is the only routing table HQ uses. It also loads this project's lessons, labelled as data and never as instructions.
+2. **Briefing.** All questions in one round, then HQ runs on its own.
+3. **Recon.** A Haiku scout maps the codebase. The map stays fresh until manifests or config change.
+4. **Operation order.** Commander's intent, definition of done, tier, units, phases.
+   - A **campaign** gets checkpoints after each phase and its own `army/<missionId>` branch.
+   - A **campaign or Turbo** first shows you a **dispatch preview** of units and models, and waits for your go.
+5. **Dispatch.** Independent units run in parallel. Parallel engineering instances get separate git worktrees.
+6. **Safety gates.** Irreversible and external actions wait for you.
+7. **Integrate.** RED findings loop back for a fix and re-check. Thin work gets one targeted re-brief. Embedded instructions found in data are reported, never followed.
+8. **Inspection.** The Inspector General judges the result cold.
+9. **After-action.** History curates `lessons.md` (on Sonnet, at most 100 lines). `end` prints the lessons diff, which goes into your final report.
 
-Try it in the [mission simulator](https://omer-yehuda.github.io/plugins/#simulator).
+Every phase is recorded with `army.js phase`. If the context is compacted mid-mission, a `SessionStart` hook restores the mission, the phase and the operation order, so HQ doesn't skip inspection or leave the gate armed.
 
-**Token savings built in:**
-- Units write full reports to disk and return a SITREP of at most 200 words to HQ.
-- Recon is cached per git commit, and the lessons file stays under ~100 lines.
-- Lean mode routes heavy units to Sonnet and light ones to Haiku.
-- Specialist playbooks load on demand.
+## Security model
 
-Tip: in full mode, run the main session on Opus (`/model opus`), because HQ uses the main session's model.
+| Threat | Defense |
+|---|---|
+| Mission reports leaking into commits, npm packages or images | `.army/.gitignore` contains `*`, and `.army/` is also added to `.git/info/exclude`. Tested: neither git nor `npm pack` includes it. **Docker** build contexts ignore nested `.gitignore` files, so add `.army` to your `.dockerignore`. |
+| A repository planting fake lessons in `.army/` | `start` refuses to run if `.army/` is tracked in git. Lessons are always presented as data, and units are told to report embedded instructions instead of following them. |
+| Prompt injection from web pages, files or other units' reports | A standing order in every unit says orders come only from the brief. Research units have no shell and no edit tools, so an injected instruction has little to act with. |
+| The army switching off its own gate | During a mission, the gate asks before `gates`, `mode` or `end --abort`, before ending ahead of after-action, and before any write to the army's session state or settings, whether by shell, Write/Edit or inline script. |
+| One session's mission gating another session | State is per session (`.army/sessions/<id>.json`). It expires after 4 hours without activity, and the hook never walks above the git root or into your home directory. |
+
+**The gate is a speed bump, not a sandbox.** It tokenizes shell commands:
+- it strips git global options like `-C`
+- it unwraps `sh -c`, `xargs`, `find -exec`, `npx`/`dlx`/`uvx` and inline `python -c`/`node -e` code
+- it ignores quoted text, such as commit messages
+- it allows read-only subcommands
+
+It asks before pushes, history rewrites, deletions, deploys, publishing, destructive SQL, `curl | sh`, packages downloaded and run, new dependencies, GitHub writes, data sent to non-local hosts, and MCP tools whose names are write actions. It cannot see inside scripts, Makefiles or `package.json` scripts. 150+ cases in `tests/` cover what it catches and what it lets through.
 
 ## Memory (local only)
 
-Each project gets a `.army/` folder:
-
 ```
 .army/
-  state.json        active mission flag (used by the safety gate)
-  recon.md          codebase map, cached per commit
-  lessons.md        lessons learned, read by HQ at the start of every mission
-  missions/<id>/    operation order, unit reports, mission log
+  .gitignore        "*": git, npm pack and most tools skip the folder
+  sessions/<id>.json  one active mission per session (used by the gate)
+  recon.md          codebase map, with a manifest fingerprint
+  lessons.md        lessons learned, at most 100 lines, read by HQ as data
+  missions/<id>/    opord.md, unit reports, lessons.before.md, state.final.json, log.md
 ```
 
-`.army/` is added to `.git/info/exclude` automatically. It is never committed and `.gitignore` is not touched. Your settings (mode, gates) are stored per user in the plugin's data directory.
+Your settings (mode, gates) are stored per user in the plugin's data directory.
 
-## Safety gates
+## Development
 
-With gates **on** (the default), HQ asks before irreversible actions. During an active mission, a `PreToolUse` hook also enforces this for shell commands. It asks for approval before:
+```bash
+node tools/sync-army.js          # regenerate agent frontmatter + tables from units.json
+node tools/sync-army.js --check  # CI: fails if anything drifted
+node --test plugins/army/tests/*.test.js # gate + lifecycle tests
+node evals/run.js                # army vs. plain Claude on fixed missions (needs a signed-in claude CLI)
+```
 
-- `git push`, history rewrites and discarding changes
-- deleting files
-- deployments (Vercel, Netlify, Firebase, Fly, Kubernetes, Terraform, and more)
-- publishing packages
-- dropping data and running schema migrations
-- installing new dependencies
-
-Outside an army mission the hook does nothing.
+`units.json` is the single source of truth for each unit's model routing, tools and description. Agent frontmatter, the HQ routing table, this README's table and the map are all generated from it.
 
 ## Requirements
 
-Claude Code with plugin support, and Node.js 18+ (used by the control script, the hook and the map generator).
+Claude Code with plugin support, and Node.js 18+ (control script, hooks and map generator). See [CHANGELOG.md](CHANGELOG.md) for release notes.

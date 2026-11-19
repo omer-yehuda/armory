@@ -1,17 +1,24 @@
 ---
 name: gates
-description: Show or switch the army's safety gates (on or off). Use only when the user explicitly asks to check or change army safety gates / approvals, or runs /army:gates. Never change this on your own initiative.
+description: Show or switch the army safety gates (on or off).
 argument-hint: "[on|off]"
+disable-model-invocation: true
 ---
 
 Run:
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/army.js" gates $ARGUMENTS --data "${CLAUDE_PLUGIN_DATA}"
+node "${CLAUDE_PLUGIN_ROOT}/scripts/army.js" gates "$ARGUMENTS" --data "${CLAUDE_PLUGIN_DATA}"
 ```
 
-Then reply in one line with the current state:
-- **on** (default): during a mission, the army stops and asks before irreversible actions: git push, deploy, publish, deleting files or data, history rewrites, schema migrations and installing new dependencies.
+Reply in one line with the current state:
+- **on** (default): during a mission, a hook asks before irreversible or external actions:
+  - git push, history rewrites and discarding changes
+  - deleting files or data
+  - deployments and publishing
+  - new dependencies, and downloaded scripts or packages
+  - GitHub writes and external MCP actions
+  - changes to the army's own state
 - **off**: the army proceeds without asking. Claude Code's normal permission prompts still apply.
 
-If the user turned the gates off, add a short reminder that this lets the army push, deploy and delete without asking.
+The gate is a speed bump, not a sandbox: it reads shell commands, but not what runs inside scripts. If the user turned the gates off, add a one-line reminder of what that allows. If a mission is active, this command asks for approval.

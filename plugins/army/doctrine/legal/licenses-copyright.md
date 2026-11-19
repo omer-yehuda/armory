@@ -3,7 +3,7 @@
 Goal: the project has the right to use everything it contains, and it meets every attribution and license obligation.
 
 ## 1. Open-source dependencies
-- Inventory the licenses without installing tools into the project: try `npx license-checker --summary --production` (JS) or `pip-licenses` (Python) if available. Otherwise read the `license` fields in package metadata.
+- Inventory the licenses from package metadata: the `license` fields in `package.json` files under `node_modules/` (Grep works well), or Python package metadata (`*.dist-info/METADATA`). You have no shell; if a full automated inventory is needed, ask HQ under HANDBACK to have engineering run `npx license-checker --summary --production` or `pip-licenses`.
 - Classify them:
   - **Permissive** (MIT, BSD, ISC, Apache-2.0): usually fine. Keep the copyright notices. Apache-2.0 also requires keeping the NOTICE file and includes patent terms.
   - **Weak copyleft** (LGPL, MPL-2.0, EPL): usually fine to use as a library. Modifications to those files must be shared, and LGPL static linking needs care.

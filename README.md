@@ -11,7 +11,7 @@
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-d97757)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
 
-**[Live interactive map](https://omer-yehuda.github.io/plugins/)** · [Mission simulator](https://omer-yehuda.github.io/plugins/#simulator) · [How it works](https://omer-yehuda.github.io/plugins/#how)
+**[Command center (live)](https://omer-yehuda.github.io/plugins/)** · [Order of battle](https://omer-yehuda.github.io/plugins/#units) · [Rules of engagement](https://omer-yehuda.github.io/plugins/#roe)
 
 </div>
 
@@ -46,7 +46,7 @@ To update later, run `/plugin marketplace update omer-plugins`.
 
 | Plugin | What it does | Version |
 |---|---|---|
-| [**army**](plugins/army/README.md) | Multi-agent orchestration. A Chief of Staff commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, backed by 110 on-demand specialist playbooks. Includes cost-aware model routing, safety gates and local lessons-learned memory. | 1.1.0 |
+| [**army**](plugins/army/README.md) | Multi-agent orchestration. A Chief of Staff commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, backed by 110 on-demand field manuals. Session-bound safety gates, least-privilege tool kits, cost-aware model routing and local lessons-learned memory. | 1.2.0 |
 
 ---
 
@@ -55,6 +55,8 @@ To update later, run `/plugin marketplace update omer-plugins`.
 > Give Claude a mission, not a prompt.
 
 Say **"raise the army"** and Claude becomes a Chief of Staff. It asks its briefing questions once, writes an operation order, and dispatches specialist units in parallel, each on the most cost-effective model for its job. An independent Inspector General checks the result against your requirements before anything is reported back.
+
+[![A mission playing out in the command center](docs/images/mission.gif)](https://omer-yehuda.github.io/plugins/)
 
 ```mermaid
 flowchart LR
@@ -79,10 +81,10 @@ flowchart LR
 
 | | |
 |---|---|
-| [![Order of battle](docs/images/map-light.png)](https://omer-yehuda.github.io/plugins/) | [![Unit drawer with playbooks](docs/images/unit-drawer.png)](https://omer-yehuda.github.io/plugins/?unit=defense) |
-| **Order of battle:** all 18 units, with the model badges following the Lean/Full switch | **Unit drawer:** doctrine and every specialist playbook, readable in place |
-| [![Mission simulator](docs/images/simulator.png)](https://omer-yehuda.github.io/plugins/#simulator) | [![How it works](docs/images/how-it-works.png)](https://omer-yehuda.github.io/plugins/#how) |
-| **Mission simulator:** pick a mission type and see which units engage, in which phase, on which model | **How it works:** the 9-step mission flow, memory, safety gates and token discipline |
+| [![The operations table at the safety gate](docs/images/hero-gate.png)](https://omer-yehuda.github.io/plugins/) | [![Order of battle with shoulder patches](docs/images/order-of-battle.png)](https://omer-yehuda.github.io/plugins/#units) |
+| **The mission:** a live operations table. HQ deploys units, then holds at the safety gate for your authorization | **Order of battle:** 18 units as shoulder patches; the rank stars follow the Lean/Full rations switch |
+| [![Classified personnel file](docs/images/dossier.png)](https://omer-yehuda.github.io/plugins/?unit=defense) | [![Rules of engagement](docs/images/rules.png)](https://omer-yehuda.github.io/plugins/#roe) |
+| **Personnel files:** each unit's assignment, kit, doctrine and every field manual | **Rules of engagement:** safety gates, local memory and token rations, stated honestly |
 
 ### Highlights
 
@@ -95,9 +97,16 @@ flowchart LR
   - Operations and market: CI/CD, SEO/ASO, data analysis, sales and support.
 - **Self-improving:** the R&D unit proposes new skills and playbooks from recurring lessons, and you approve every change.
 - **Cost-aware model routing:** a `lean` profile for the Pro plan (Sonnet and Haiku only) and a `full` profile for the Max plan (Opus for critical units). Switch with `/army:mode`.
-- **Token discipline by design:** units write full reports to disk and return SITREPs of at most 200 words. The codebase map is cached per commit, and playbooks load only on demand.
-- **Safety gates:** during a mission, a `PreToolUse` hook asks for approval before pushes, deploys, publishing, deletions, data drops and new dependencies. Toggle with `/army:gates`.
-- **Learns per project:** a local `.army/lessons.md` file is read at the start of every mission. It is never committed to git.
+- **Token discipline by design:** units write full reports to disk and return SITREPs of at most 200 words. Recon stays fresh until manifests change, and field manuals load only on demand. Campaigns and Turbo show a dispatch preview before launching.
+- **Safety gates, bound to your mission:** a session-scoped `PreToolUse` hook tokenizes commands and asks before:
+  - pushes, deletions, deploys and publishing
+  - destructive SQL, `curl | sh` and downloaded packages
+  - new dependencies, GitHub writes and external MCP actions
+  - any attempt to switch itself off
+
+  It's a speed bump, not a sandbox.
+- **Least-privilege units:** research and planning units can't run a shell or edit code. Every unit ignores instructions embedded in files and web pages, and reports them instead.
+- **Learns per project:** `.army/lessons.md` is read as data at the start of every mission, capped at 100 lines, and shown to you as a diff. It is never committed or packed, and a repository can't plant it.
 - **Turbo mode:** `raise the entire army` (or `all units on board`) engages every unit.
 
 See the full documentation in [plugins/army/README.md](plugins/army/README.md).
@@ -107,7 +116,7 @@ See the full documentation in [plugins/army/README.md](plugins/army/README.md).
 ## Privacy & safety
 
 - **No telemetry.** Plugins in this marketplace send nothing anywhere on their own.
-- **Local memory only.** Project memory lives in `.army/` inside your project, and is excluded from git automatically through `.git/info/exclude`. Per-user settings live in Claude Code's plugin data directory.
+- **Local memory only.** Project memory lives in `.army/` inside your project, protected by its own `.gitignore` (`*`) and `.git/info/exclude`, so neither git nor `npm pack` includes it. Add `.army` to `.dockerignore` if you build images. Per-user settings live in Claude Code's plugin data directory.
 - **Human in the loop.** Irreversible actions require your approval by default.
 - **Defensive security only.** The red-team specialist is restricted to your own project in a local or test environment.
 - The legal unit produces an automated risk review, **not legal advice**.
@@ -119,16 +128,19 @@ See the full documentation in [plugins/army/README.md](plugins/army/README.md).
 plugins/
   army/
     .claude-plugin/plugin.json    Plugin manifest
+    units.json                    Single source of truth: routing, tools, descriptions
     skills/                       raise · raise-all · mode · gates · status · map
-    agents/                       18 unit subagents
-    doctrine/                     Specialist playbooks, loaded on demand
-    hooks/hooks.json              Safety gate hook
-    scripts/army.js               Zero-dependency control script
-    scripts/build-map.js          Generates the interactive map from the plugin files
-    tests/                        Safety gate tests
+    agents/                       18 unit subagents (frontmatter generated from units.json)
+    doctrine/                     110 field manuals, loaded on demand
+    hooks/hooks.json              Safety gate + SessionStart re-injection
+    scripts/army.js               Zero-dependency control script and gate
+    scripts/build-map.js          Generates the command-center map (fonts embedded)
+    tests/                        Gate + lifecycle tests
+    CHANGELOG.md
 docs/                             Live site (GitHub Pages): interactive map + screenshots
+evals/                            Army vs. plain Claude on fixed missions
 templates/plugin-template/        Scaffold for new plugins
-tools/                            Maintenance scripts
+tools/sync-army.js                Generates agent frontmatter and tables, CI drift check
 .github/workflows/validate.yml    CI: manifest validation + tests
 ```
 
@@ -154,8 +166,9 @@ Plugin names must not start with `claude-` or `anthropic-`, because those prefix
 ## Development
 
 ```bash
-node --test plugins/army/tests/gate.test.js   # safety gate test suite
-node tools/sync-standing-orders.js            # run after editing doctrine/shared/standing-orders.md
+node --test plugins/army/tests/*.test.js               # gate + lifecycle tests
+node tools/sync-army.js                       # regenerate files from units.json and standing orders
+node evals/run.js                             # army vs. plain Claude (needs a signed-in claude CLI)
 claude plugin validate .                      # validate the marketplace
 node plugins/army/scripts/build-map.js --out docs/index.html   # rebuild the live map after changing the army
 ```
