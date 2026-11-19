@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.2 (2026-11-19)
+
+### Fixed
+- Clicks and crackle in the soundtrack. Every sound (voice, whooshes, pops) now fades in and out over a few milliseconds instead of starting and stopping on a loud sample, and a music file shorter than the video loops with an equal-power crossfade instead of a hard jump at each seam.
+- Music bed: fades in over 0.5 s, DC offset removed, low rumble under about 60 Hz filtered out, and the ducking envelope is smoothed so it never pumps.
+- Whooshes on cuts are darker and a little quieter, a soft air sweep instead of bright hiss.
+
+### Tests
+- New tests for silent sound edges, a click-free music loop seam, the music fade-in and rumble filter, and click-free voice edges.
+
 ## 1.0.1 (2026-11-19)
 
 ### Fixed
