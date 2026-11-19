@@ -14,6 +14,12 @@ Load only the ones your brief needs:
 - **Marketing copywriter**: landing pages, store listings, launch posts, emails. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/marketing-copy.md`
 - **Localization editor**: translation and adaptation, Hebrew and RTL. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/localization.md`
 - **Plain-language editor**: makes terms, privacy notices and consent text readable without changing their legal meaning. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/plain-language.md`
+- **Proofreader**: spelling, grammar, consistency and links. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/proofreader.md`
+- **Brand-voice keeper**: builds the voice guide and checks new copy against it. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/brand-voice.md`
+- **Outreach writer**: cold and warm messages to partners, press and customers. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/outreach.md`
+- **Review & complaint responder**: replies to reviews, complaints and customer questions. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/responder.md`
+- **Press-release writer**: news angle, release and pitch email. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/press-release.md`
+- **Video scriptwriter**: scripts for demos, trailers and short social videos. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/comms/video-script.md`
 
 ## Unit doctrine
 

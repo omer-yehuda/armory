@@ -15,6 +15,12 @@ Load only the ones your brief needs:
 - **Supply-chain specialist**: vulnerable or malicious dependencies, lockfiles, CI. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/supply-chain.md`
 - **Threat modeler**: assets, trust boundaries, abuse cases. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/threat-model.md`
 - **Red team**: adversarial review of THIS project only. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/red-team.md`
+- **Hardening officer**: headers, CORS, exposed surfaces, cloud and database config. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/hardening.md`
+- **AI security officer**: prompt injection, unsafe output handling, and protecting the army itself. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/ai-security.md`
+- **Personal-data mapper**: technical map of personal data flows and leaks. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/data-flow.md`
+- **Child-safety officer**: safety-by-design for products children may use. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/child-safety.md`
+- **Backup & recovery officer**: 3-2-1 backups, restore drills, runbooks. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/backup-recovery.md`
+- **Account security officer**: 2FA, recovery and access checklist for critical accounts. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/defense/accounts.md`
 
 ## Unit doctrine
 

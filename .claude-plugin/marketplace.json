@@ -11,7 +11,7 @@
     {
       "name": "army",
       "source": "./plugins/army",
-      "description": "A chief of staff that commands specialist units (intel, engineering, defense, legal, comms and more) as subagents, with cost-aware model routing, safety gates and local lessons-learned memory.",
+      "description": "A chief of staff that commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, with 110+ on-demand specialist playbooks, cost-aware model routing, safety gates and local lessons-learned memory.",
       "category": "productivity",
       "keywords": [
         "orchestration",

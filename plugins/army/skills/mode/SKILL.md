@@ -11,7 +11,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/army.js" mode $ARGUMENTS --data "${CLAUDE_PL
 ```
 
 Then reply in one or two lines with the current mode and what it means:
-- **lean** (default, suited to the Pro plan): no unit runs on Opus. Critical units (ops, defense, legal, rescue, inspector-general) run on Sonnet, and light units (logistics, treasury, growth, recon, history) run on Haiku. HQ also engages fewer units.
+- **lean** (default, suited to the Pro plan): no unit runs on Opus. Critical units (ops, defense, legal, rescue, inspector-general, rnd, special-ops) run on Sonnet, and light units (logistics, treasury, growth, sales, recon, history) run on Haiku. HQ also engages fewer units.
 - **full** (suited to the Max plan): critical units run on Opus, most units run on Sonnet, and mechanical units run on Haiku.
 
 Tip for **full** mode: run the main session on Opus (`/model opus`), because HQ itself runs on the main session's model.

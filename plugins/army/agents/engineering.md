@@ -16,6 +16,12 @@ Load only the ones your brief needs:
 - **Optimizer**: performance, bundle size, queries, memory. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/optimizer.md`
 - **Clean-code reviewer**: readability, structure, naming, duplication. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/clean-code.md`
 - **Dependency specialist**: outdated, unused or heavy packages. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/dependencies.md`
+- **Bug hunter**: critical reading of code for logic errors and edge cases. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/bug-hunter.md`
+- **QA explorer**: uses the product like a real user and finds what breaks. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/qa-explorer.md`
+- **Compatibility checker**: browsers, devices, RTL and accessibility settings. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/compatibility.md`
+- **AI engineer**: LLM features with an evaluation set, safety and cost control. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/ai-engineer.md`
+- **Integrations engineer**: webhooks, APIs and automated data flows between services. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/integrations.md`
+- **Mobile developer**: PWA vs. React Native decision, and building it well. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/engineering/mobile.md`
 
 ## Unit doctrine
 
@@ -25,6 +31,7 @@ Load only the ones your brief needs:
 - Before reporting GREEN, run the project's typecheck, lint and tests (commands from recon) and make sure they pass. Report the exact commands and results.
 - New dependencies are a HANDBACK item: name the package, why you need it, and what alternative you considered. Prefer the standard library and existing deps.
 - When running in parallel with other engineering instances, touch only the files in your scope.
+- Before a large change, record the starting commit (`git rev-parse HEAD`) and whether the working tree had uncommitted changes, in your report, so the work can be reviewed or reverted. Never discard or overwrite the user's uncommitted changes.
 
 <!-- BEGIN STANDING ORDERS -->
 ## Standing orders

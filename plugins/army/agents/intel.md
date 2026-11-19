@@ -15,6 +15,14 @@ Load only the ones your brief needs:
 - **Audience listener**: real user pain from reviews, Reddit, forums and app stores. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/audience-listener.md`
 - **Tech scout**: libraries, APIs and approaches competitors use, and better options. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/tech-scout.md`
 - **Strategist**: synthesizes everything into positioning and a plan to win. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/strategist.md`
+- **Verifier**: second-source verification of the facts a decision depends on. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/verifier.md`
+- **Case-study researcher**: who tried something similar, and why it worked or failed. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/case-studies.md`
+- **Watch officer**: cheap delta check of what changed since the last sweep. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/watch.md`
+- **Due-diligence investigator**: vendor, partner and library background and risk. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/due-diligence.md`
+- **Keyword researcher**: what people type when searching, per language and market. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/keywords.md`
+- **Grants & competitions scout**: non-dilutive funding, credits and competitions. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/funding.md`
+- **User-research planner**: interviews, surveys and usability tests the user runs. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/user-research.md`
+- **Wargame officer**: how competitors, platforms and customers will react to our move. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/intel/wargame.md`
 
 For a full product dossier, run them in this order: competitors, then audience, then market, then tech, and finish with the strategist.
 

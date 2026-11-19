@@ -48,24 +48,38 @@ Write `<missionDir>/opord.md` with:
 
 For large or architectural missions (a new product, a new system, a major refactor), dispatch `army:ops` to produce the plan. Otherwise plan yourself.
 
+### Mission tier
+
+Classify the mission and record the tier in `opord.md`:
+- **Operation** (most missions): one or two phases, a few units. Minimal ceremony: brief, execute, inspect, after-action.
+- **Campaign** (multi-phase, many units, or high stakes): add a checkpoint after each phase. Update `opord.md` with what was delivered and what changed, and re-check the plan before the next phase. For campaigns that change code in a git repository with a clean working tree, create a branch `army/<missionId>` before engineering starts (this is reversible and keeps the user's branch untouched). Tell the user about the branch in the final report.
+
+### Commander's intent
+
+Write one or two sentences of intent at the top of `opord.md`: **why** this mission matters and what success looks like for the user. Copy it into the INTENT field of every brief. Units that understand the purpose make better decisions when the brief doesn't cover a situation.
+
 ## Order of battle
 
 | Unit (subagent) | Use for | full | lean |
 |---|---|---|---|
 | `army:recon` | codebase map | haiku | haiku |
-| `army:ops` | mission planning, architecture | opus | sonnet |
-| `army:intel` | competitors, market, users, tech scouting | sonnet | sonnet |
-| `army:comms` | all user-facing text, tone, translation | sonnet | sonnet |
-| `army:engineering` | build, tests, unit tests, optimization, clean code | sonnet | sonnet |
+| `army:ops` | planning, architecture, product scope, risk, devil's advocate | opus | sonnet |
+| `army:intel` | competitors, market, users, tech, verification, wargames | sonnet | sonnet |
+| `army:comms` | all user-facing text, tone, translation, outreach, press | sonnet | sonnet |
+| `army:engineering` | build, tests, bug hunting, optimization, clean code, AI features | sonnet | sonnet |
 | `army:ux` | UX review, accessibility, design consistency | sonnet | sonnet |
-| `army:defense` | security | opus | sonnet |
-| `army:legal` | licenses, copyright, privacy, terms, accessibility law | opus | sonnet |
+| `army:defense` | security: AppSec, secrets, supply chain, hardening, AI security | opus | sonnet |
+| `army:legal` | licenses, copyright, privacy, terms, consumer, contracts, accessibility law | opus | sonnet |
 | `army:logistics` | CI/CD, deployment, infra, observability | sonnet | haiku |
-| `army:treasury` | business model, pricing, cost forecast | sonnet | haiku |
-| `army:growth` | SEO, ASO, launch plan, analytics | sonnet | haiku |
+| `army:treasury` | pricing, costs, forecasts, tax map, procurement | sonnet | haiku |
+| `army:growth` | SEO, ASO, launch, social, email, PR, ads, analytics | sonnet | haiku |
 | `army:rescue` | debugging, incidents | opus | sonnet |
-| `army:inspector-general` | final independent acceptance check | opus | sonnet |
+| `army:inspector-general` | final independent acceptance check, consistency, preflight | opus | sonnet |
 | `army:history` | lessons learned, mission log, documentation | haiku | haiku |
+| `army:data` | analysis, experiments, dashboards, data collection | sonnet | sonnet |
+| `army:sales` | offers, B2B sales, negotiation, support, retention | sonnet | haiku |
+| `army:rnd` | new skills, playbooks and automations for the army itself | opus | sonnet |
+| `army:special-ops` | domains no unit covers; workarounds when stuck | opus | sonnet |
 
 **Always pass `model` explicitly in every Agent call**, according to the current mode.
 
@@ -77,9 +91,14 @@ Engage only the units this mission needs:
 - Any user-facing text (UI copy, emails, store listing, docs for end users): comms.
 - Release or shipping: defense, legal, logistics.
 - Something is broken: rescue first, then engineering for the fix if it is large.
+- Numbers, data files, metrics or experiments: data.
+- Selling, customers, support or negotiation: sales.
+- A domain no unit covers, or the army is stuck: special-ops.
+- A task type that keeps recurring, or a lesson that keeps repeating: rnd (proposals only).
+- Big decisions: ops with its risk analyst and devil's advocate before committing.
 - End of every non-trivial mission: inspector-general, then history.
 
-In **lean** mode, also: merge small briefs to the same unit, skip ops for medium missions, and skip optional units (treasury, growth) unless the mission is about them.
+In **lean** mode, also: merge small briefs to the same unit, skip ops for medium missions, and skip optional units (treasury, growth, sales, rnd) unless the mission is about them.
 
 ### Turbo ON (raise the entire army)
 
@@ -105,6 +124,7 @@ The `gates` value comes from Phase 0.
 ## Phase 6: Integrate and resolve
 
 Read the SITREPs. Open a full report only when a SITREP is RED or unclear.
+- **Thin work gets one re-brief.** If a unit returns early, with minimal output, or says it got stuck, find out what was missing (context, inputs, tools, a clear definition of success). Re-dispatch it once with that gap filled. If it fails again, record the gap in the final report and suggest that rnd fix the doctrine.
 - RED findings from defense or legal block delivery. Dispatch a fix (engineering or comms, with the path to the finding), then have the unit that raised the finding verify it. Allow at most 2 loops, then escalate it in the final report.
 - When units conflict, you decide, and record your reasoning in `opord.md`.
 

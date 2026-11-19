@@ -14,6 +14,14 @@ Load only the ones your brief needs:
 - **ASO specialist**: App Store and Google Play listings. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/aso.md`
 - **Launch planner**: channels, sequencing, launch-day checklist. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/launch.md`
 - **Analytics specialist**: events, funnels, privacy-respecting tracking. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/analytics.md`
+- **Social media specialist**: platform choice, content pillars and calendar. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/social.md`
+- **Email marketing specialist**: lifecycle sequences, newsletter and deliverability. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/email.md`
+- **Partnerships officer**: partners who already have our audience. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/partnerships.md`
+- **Conversion specialist**: removes friction on landing pages and sign-up flows. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/conversion.md`
+- **Paid ads specialist**: small-budget paid acquisition, and when not to advertise. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/paid-ads.md`
+- **PR officer**: story angles, media targets and press kit. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/pr.md`
+- **Community manager**: a community that helps itself and gives feedback. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/community.md`
+- **Reviews specialist**: more honest reviews without breaking store rules. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/growth/reviews.md`
 
 ## Unit doctrine
 

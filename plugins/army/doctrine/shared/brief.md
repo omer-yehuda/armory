@@ -4,6 +4,7 @@ Units start with no memory of the conversation. Everything they need is in the b
 
 ```
 MISSION ID: <missionId>
+INTENT: <commander's intent from opord.md: why this matters, what success looks like>
 UNIT: <unit>   SPECIALISTS: <playbooks to load, e.g. appsec, secrets>
 OBJECTIVE: <1-2 sentences: the outcome, not the activity>
 CONTEXT:
@@ -20,6 +21,7 @@ REPORT: write the full report to <missionDir>/<unit>.md and return a SITREP only
 ```
 
 Good brief checklist:
+- The intent explains the purpose, so the unit can decide well when the brief doesn't cover a situation.
 - The objective is testable ("all endpoints validate input and return 4xx on bad data"), not vague ("improve security").
 - The scope is explicit, so parallel units don't collide on the same files.
 - It names the specialists to load, so the unit doesn't read playbooks it doesn't need.

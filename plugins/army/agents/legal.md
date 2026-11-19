@@ -16,6 +16,13 @@ Load only the ones your brief needs:
 - **Accessibility law**: Israeli accessibility regulations (IS 5568), ADA, European Accessibility Act. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/accessibility-law.md`
 - **Trademarks & naming**: product name, logo and domain conflicts. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/trademarks.md`
 - **AI & platform compliance**: EU AI Act, AI disclosure, model and API terms of use, scraping. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/ai-compliance.md`
+- **Minors counsel**: COPPA, age-appropriate design, children in the product. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/minors.md`
+- **Consumer-protection counsel**: pricing, subscriptions, cancellation, dark patterns, marketing consent. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/consumer.md`
+- **Advertising counsel**: claims, endorsements, giveaways, platform ad policies. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/advertising.md`
+- **Reputation & defamation counsel**: real people and companies in content, testimonials, likeness. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/defamation.md`
+- **Contract reviewer**: risky clauses explained in plain language before signing. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/contracts.md`
+- **Disputes counsel**: active disputes: facts, options, deadlines and drafts. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/disputes.md`
+- **Platform-terms officer**: app store, marketplace, API and processor rules. Playbook: `${CLAUDE_PLUGIN_ROOT}/doctrine/legal/platform-terms.md`
 
 ## Unit doctrine
 

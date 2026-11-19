@@ -1,8 +1,8 @@
 {
   "name": "army",
   "displayName": "Army",
-  "version": "1.0.0",
-  "description": "A chief of staff that commands specialist units (intel, engineering, defense, legal, comms and more) as subagents, with cost-aware model routing, safety gates and local lessons-learned memory.",
+  "version": "1.1.0",
+  "description": "A chief of staff that commands 18 specialist units (intel, engineering, defense, legal, comms, data, sales and more) as subagents, with 110+ on-demand specialist playbooks, cost-aware model routing, safety gates and local lessons-learned memory.",
   "author": {
     "name": "Omer Yehuda",
     "url": "https://github.com/omer-yehuda"
@@ -18,5 +18,5 @@
     "research",
     "legal"
   ],
-  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/army"
+  "homepage": "https://omer-yehuda.github.io/plugins/"
 }

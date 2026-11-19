@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Army · Order of Battle</title>
+<meta name="description" content="Interactive map of the Army plugin for Claude Code: a chief of staff that commands specialist units as subagents.">
+<style>
+:root {
+  --bg: #f6f7fb; --panel: #ffffff; --panel-2: #f1f3f8; --ink: #141824; --muted: #5f6880; --line: #e2e6ef;
+  --accent: #5b4cf5; --accent-ink: #ffffff; --shadow: 0 1px 2px rgba(20,24,36,.06), 0 6px 24px rgba(20,24,36,.06);
+  --opus: #6d4df2; --sonnet: #0b7fc4; --haiku: #1e9a63; --skip: #9aa1b2;
+  --g-command: #6d5efc; --g-intelligence: #2f7ff0; --g-build: #18a058; --g-protect: #e5484d; --g-market: #f08c2e; --g-other: #7a8499;
+  --radius: 14px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+:root[data-theme="dark"] {
+  --bg: #0e1117; --panel: #161b24; --panel-2: #1d2330; --ink: #e9ecf3; --muted: #9aa3b8; --line: #283041;
+  --accent: #8b7dff; --accent-ink: #0e1117; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px rgba(0,0,0,.35);
+  --opus: #a58fff; --sonnet: #4cb8f5; --haiku: #4fd39a; --skip: #5d6577;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* top bar */
+.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1280px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
+.brand-mark { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, var(--g-command), var(--g-intelligence)); display: grid; place-items: center; color: #fff; font-size: 14px; font-weight: 800; letter-spacing: -.5px; }
+.ver { font: 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
+nav.tabs { display: flex; gap: 4px; }
+nav.tabs a { padding: 7px 12px; border-radius: 9px; color: var(--muted); font-weight: 600; font-size: 14px; }
+nav.tabs a:hover { background: var(--panel-2); text-decoration: none; color: var(--ink); }
+nav.tabs a[aria-current="page"] { background: var(--panel); color: var(--ink); box-shadow: var(--shadow); }
+.spacer { flex: 1; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--panel); }
+.seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.iconbtn { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 6px 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+
+/* layout */
+main { max-width: 1280px; margin: 0 auto; padding: 24px 20px 64px; }
+.hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: center; margin-bottom: 26px; }
+.hero h1 { font-size: 34px; line-height: 1.15; margin: 0 0 10px; letter-spacing: -.6px; }
+.hero p { margin: 0; color: var(--muted); font-size: 16px; max-width: 640px; }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; }
+.stat b { font-size: 20px; display: block; line-height: 1.2; }
+.stat span { font-size: 12px; color: var(--muted); }
+.install { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.install h3 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.cmdline { display: flex; align-items: center; gap: 8px; background: var(--panel-2); border-radius: 10px; padding: 9px 10px 9px 12px; font: 13px var(--mono); margin-bottom: 8px; overflow-x: auto; }
+.cmdline code { flex: 1; white-space: nowrap; }
+.copy { border: 1px solid var(--line); background: var(--panel); border-radius: 7px; padding: 3px 8px; cursor: pointer; font-size: 12px; font-family: inherit; }
+.install small { color: var(--muted); }
+.view { display: none; }
+.view.active { display: block; }
+.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+.search { flex: 1; min-width: 240px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); color: var(--ink); font: inherit; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 11px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { border-color: var(--ink); }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 13px; margin: -6px 0 18px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* model badge */
+.model { font: 600 11px var(--mono); color: #fff; border-radius: 6px; padding: 2px 7px; text-transform: lowercase; white-space: nowrap; }
+.model.opus { background: var(--opus); } .model.sonnet { background: var(--sonnet); } .model.haiku { background: var(--haiku); } .model.inherit { background: var(--skip); }
+:root[data-theme="dark"] .model { color: #0e1117; }
+
+/* org chart */
+.hq { max-width: 620px; margin: 0 auto; background: var(--panel); border: 2px solid var(--ink); border-radius: 16px; padding: 16px 20px; text-align: center; box-shadow: var(--shadow); }
+.hq b { font-size: 19px; }
+.hq p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+.hq .phr { display: inline-block; margin-top: 8px; font: 12.5px var(--mono); background: var(--panel-2); border-radius: 7px; padding: 3px 8px; margin-inline: 3px; }
+.stem { width: 2px; height: 22px; background: var(--line); margin: 0 auto; }
+.groups { display: grid; gap: 22px; }
+.group h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.unit { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; cursor: pointer; box-shadow: var(--shadow); transition: transform .12s ease, border-color .12s ease; position: relative; overflow: hidden; }
+.unit::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--gc); }
+.unit:hover { transform: translateY(-2px); border-color: var(--gc); }
+.unit-head { display: flex; align-items: center; gap: 10px; }
+.mono { width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--gc) 16%, transparent); color: var(--gc); display: grid; place-items: center; font: 700 12px var(--mono); flex: none; }
+.unit-title { font-weight: 700; font-size: 15px; line-height: 1.25; }
+.unit-id { font: 12px var(--mono); color: var(--muted); }
+.unit-head .model { margin-left: auto; }
+.unit-use { margin: 10px 0 8px; font-size: 13.5px; color: var(--muted); min-height: 40px; }
+.unit-foot { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); }
+.match { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.match span { font-size: 11.5px; background: var(--panel-2); border-radius: 6px; padding: 1px 6px; }
+.empty { text-align: center; color: var(--muted); padding: 40px; }
+.hidden { display: none !important; }
+
+/* drawer */
+.scrim { position: fixed; inset: 0; background: rgba(10,12,18,.38); opacity: 0; pointer-events: none; transition: opacity .18s; z-index: 30; }
+.scrim.open { opacity: 1; pointer-events: auto; }
+.drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(620px, 100%); background: var(--panel); border-left: 1px solid var(--line); z-index: 31; transform: translateX(102%); transition: transform .22s ease; display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,.15); }
+.drawer.open { transform: none; }
+.d-head { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: flex-start; }
+.d-head .mono { width: 44px; height: 44px; font-size: 14px; border-radius: 12px; }
+.d-head h2 { margin: 0; font-size: 21px; }
+.d-close { margin-left: auto; border: 1px solid var(--line); background: var(--panel-2); border-radius: 9px; width: 34px; height: 34px; cursor: pointer; font-size: 18px; line-height: 1; }
+.d-body { padding: 16px 20px 40px; overflow-y: auto; }
+.d-body h3 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); margin: 20px 0 8px; }
+.kv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kv div { background: var(--panel-2); border-radius: 10px; padding: 8px 10px; font-size: 12.5px; color: var(--muted); }
+.kv b { display: block; color: var(--ink); font-size: 14px; margin-top: 2px; }
+.spec { border: 1px solid var(--line); border-radius: 11px; margin-bottom: 8px; overflow: hidden; }
+.spec summary { cursor: pointer; padding: 10px 12px; list-style: none; display: flex; gap: 10px; align-items: baseline; }
+.spec summary::-webkit-details-marker { display: none; }
+.spec summary::before { content: "+"; font: 700 14px var(--mono); color: var(--muted); width: 12px; }
+.spec[open] summary::before { content: "−"; }
+.spec summary b { font-size: 14.5px; }
+.spec summary span { color: var(--muted); font-size: 13px; }
+.spec .pb { padding: 2px 16px 12px 34px; border-top: 1px dashed var(--line); font-size: 14px; }
+.pb-path { font: 11.5px var(--mono); color: var(--muted); margin-top: 8px; }
+
+/* markdown */
+.md h1 { font-size: 17px; margin: 12px 0 6px; } .md h2 { font-size: 15px; margin: 14px 0 6px; } .md h3 { font-size: 14px; margin: 12px 0 4px; text-transform: none; letter-spacing: 0; color: var(--ink); }
+.md p { margin: 6px 0; } .md ul, .md ol { margin: 6px 0; padding-left: 20px; } .md li { margin: 2px 0; }
+.md code { font: 12.5px var(--mono); background: var(--panel-2); border-radius: 5px; padding: 1px 5px; }
+.md pre { background: var(--panel-2); border-radius: 9px; padding: 10px 12px; overflow-x: auto; font: 12.5px/1.45 var(--mono); }
+.md pre code { background: none; padding: 0; }
+.md table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0; }
+.md th, .md td { border: 1px solid var(--line); padding: 5px 8px; text-align: left; vertical-align: top; }
+.md th { background: var(--panel-2); }
+
+/* simulator */
+.sim { display: grid; grid-template-columns: 330px 1fr; gap: 20px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.panel h3 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.scen { display: grid; gap: 6px; margin-bottom: 18px; }
+.scen label { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 11px; padding: 9px 11px; cursor: pointer; }
+.scen label:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.scen input { margin-top: 3px; accent-color: var(--accent); }
+.scen b { display: block; font-size: 14px; }
+.scen small { color: var(--muted); font-size: 12.5px; }
+.toggle { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14px; cursor: pointer; }
+.toggle input { accent-color: var(--accent); width: 16px; height: 16px; }
+.phrase { font: 13px var(--mono); background: var(--panel-2); border-radius: 9px; padding: 9px 12px; margin-bottom: 14px; }
+.phases { display: grid; gap: 12px; }
+.phase { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); display: grid; grid-template-columns: 34px 1fr; gap: 12px; }
+.pnum { width: 34px; height: 34px; border-radius: 50%; background: var(--panel-2); display: grid; place-items: center; font-weight: 700; }
+.phase h4 { margin: 4px 0 8px; font-size: 15px; }
+.phase h4 small { color: var(--muted); font-weight: 400; margin-left: 6px; font-size: 12.5px; }
+.ulist { display: flex; flex-wrap: wrap; gap: 8px; }
+.uchip { border: 1px solid var(--line); background: var(--panel-2); border-radius: 11px; padding: 7px 10px; cursor: pointer; text-align: left; display: flex; gap: 8px; align-items: center; max-width: 100%; }
+.uchip:hover { border-color: var(--gc); }
+.uchip .mono { width: 26px; height: 26px; font-size: 10.5px; border-radius: 8px; }
+.uchip b { font-size: 13.5px; display: block; }
+.uchip small { color: var(--muted); font-size: 12px; display: block; }
+.uchip.skipped { opacity: .5; }
+.uchip.skipped small::before { content: "skipped in lean · "; }
+.sim-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+
+/* how it works */
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 26px; counter-reset: step; }
+.step { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); position: relative; }
+.step::before { counter-increment: step; content: counter(step); position: absolute; top: 12px; right: 14px; font: 700 22px var(--mono); color: var(--line); }
+.step b { display: block; margin-bottom: 4px; }
+.step p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.tree { font: 13px/1.6 var(--mono); background: var(--panel-2); border-radius: 10px; padding: 12px; white-space: pre; overflow-x: auto; }
+.panel ul { margin: 0; padding-left: 18px; font-size: 14px; } .panel li { margin: 4px 0; }
+
+/* commands */
+table.cmds { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.cmds td, .cmds th { padding: 12px 14px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+.cmds th { background: var(--panel-2); font-size: 12.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); border-top: 0; }
+.cmds td:first-child { font: 600 13.5px var(--mono); white-space: nowrap; }
+footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 40px; }
+
+@media (max-width: 900px) {
+  .hero, .sim, .cols3 { grid-template-columns: 1fr; }
+  .kv { grid-template-columns: 1fr 1fr; }
+  nav.tabs { order: 3; width: 100%; overflow-x: auto; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><div class="brand-mark" aria-hidden="true">A</div>Army <span class="ver" id="ver"></span></div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#map" data-view="map">Order of battle</a>
+      <a href="#simulator" data-view="simulator">Mission simulator</a>
+      <a href="#how" data-view="how">How it works</a>
+      <a href="#commands" data-view="commands">Commands</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="seg" role="group" aria-label="Model profile">
+      <button data-mode="lean" aria-pressed="true" title="Pro-friendly: no Opus">Lean</button>
+      <button data-mode="full" aria-pressed="false" title="Max: Opus for critical units">Full</button>
+    </div>
+    <button class="iconbtn" id="themeBtn" aria-label="Toggle dark mode">Theme</button>
+    <a class="iconbtn" id="repoLink" href="#" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <h1>Give Claude a mission, not a prompt.</h1>
+      <p>Army is a Claude Code plugin. A Chief of Staff asks its briefing questions once, then plans the mission and dispatches specialist units as subagents, each on the most cost-effective model for its job.</p>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="install">
+      <h3>Install</h3>
+      <div class="cmdline"><code id="installCmd">/plugin install army --marketplace omer-yehuda/plugins</code><button class="copy" data-copy="installCmd">Copy</button></div>
+      <div class="cmdline"><code id="raiseCmd">raise the army &lt;your mission&gt;</code><button class="copy" data-copy="raiseCmd">Copy</button></div>
+      <small>Claude Code 2.1.275+. Older versions: <code>/plugin marketplace add omer-yehuda/plugins</code>, then <code>/plugin install army@omer-plugins</code>.</small>
+    </div>
+  </section>
+
+  <section class="view" id="view-map" aria-label="Order of battle">
+    <div class="toolbar">
+      <input class="search" id="q" type="search" placeholder="Search units, specialists or skills (try: security, pricing, tests, RTL)" aria-label="Search">
+      <div class="chips" id="groupChips"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="hq">
+      <b>Chief of Staff (HQ)</b>
+      <p>Briefs you once, writes the operation order, dispatches units in parallel, enforces the safety gates, integrates the results and reports back.</p>
+      <span class="phr">raise the army</span><span class="phr">raise the entire army</span><span class="phr">/army:raise</span>
+    </div>
+    <div class="stem"></div>
+    <div class="groups" id="groups"></div>
+    <div class="empty hidden" id="empty">No unit or specialist matches your search.</div>
+  </section>
+
+  <section class="view" id="view-simulator" aria-label="Mission simulator">
+    <div class="sim">
+      <div class="panel">
+        <h3>Mission type</h3>
+        <div class="scen" id="scenarios"></div>
+        <h3>Mission details</h3>
+        <label class="toggle"><input type="checkbox" id="tSensitive" checked> Touches auth, data, secrets or dependencies</label>
+        <label class="toggle"><input type="checkbox" id="tUI" checked> Changes the user interface</label>
+        <label class="toggle"><input type="checkbox" id="tText" checked> Has user-facing text</label>
+        <label class="toggle"><input type="checkbox" id="tCommercial"> Commercial (pricing, sales, growth)</label>
+        <label class="toggle"><input type="checkbox" id="tCampaign"> Large campaign (checkpoints, own branch)</label>
+      </div>
+      <div>
+        <div class="phrase" id="simPhrase"></div>
+        <div class="sim-summary" id="simSummary"></div>
+        <div class="phases" id="phases"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-how" aria-label="How it works">
+    <div class="flow">
+      <div class="step"><b>Muster</b><p>Loads your mode, safety gates and this project's lessons-learned memory.</p></div>
+      <div class="step"><b>Briefing</b><p>Asks all its questions in one round. After that it runs on its own.</p></div>
+      <div class="step"><b>Recon</b><p>A cheap Haiku scout maps the codebase once per commit, so no unit explores twice.</p></div>
+      <div class="step"><b>Operation order</b><p>Intent, definition of done, units, phases and models, written to disk.</p></div>
+      <div class="step"><b>Dispatch</b><p>Independent units run in parallel. Each loads only the playbooks it needs.</p></div>
+      <div class="step"><b>Safety gates</b><p>Pushes, deploys, deletions and new dependencies wait for your approval.</p></div>
+      <div class="step"><b>Integrate</b><p>Reads 200-word SITREPs. Blocking findings loop back for a fix and re-check.</p></div>
+      <div class="step"><b>Inspection</b><p>An Inspector General who never saw the work judges the result cold.</p></div>
+      <div class="step"><b>After-action</b><p>History records lessons, so the next mission in this project starts smarter.</p></div>
+    </div>
+    <div class="cols3">
+      <div class="panel"><h3>Local memory</h3><div class="tree">.army/
+├─ state.json     active mission
+├─ recon.md       codebase map
+├─ lessons.md     read every mission
+└─ missions/&lt;id&gt;/
+   ├─ opord.md
+   ├─ &lt;unit&gt;.md   full reports
+   └─ log.md</div><p style="color:var(--muted);font-size:13px;margin:10px 0 0">Excluded from git automatically through <code>.git/info/exclude</code>. Never committed.</p></div>
+      <div class="panel"><h3>Safety gates (default on)</h3><ul>
+        <li>git push, history rewrites, discarding changes</li>
+        <li>Deleting files or dropping data</li>
+        <li>Deployments and infrastructure changes</li>
+        <li>Publishing packages</li>
+        <li>Installing new dependencies</li>
+        <li>Messages to external people or services</li>
+      </ul><p style="color:var(--muted);font-size:13px;margin:10px 0 0">Enforced by a <code>PreToolUse</code> hook during missions. Toggle with <code>/army:gates</code>.</p></div>
+      <div class="panel"><h3>Token discipline</h3><ul>
+        <li>One subagent per unit; specialists are playbooks loaded on demand</li>
+        <li>Full reports on disk, 200-word SITREPs to HQ</li>
+        <li>Recon cached per commit; lessons capped at ~100 lines</li>
+        <li>Lean mode: Sonnet and Haiku only</li>
+        <li>Thin work gets one targeted re-brief, not a retry loop</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-commands" aria-label="Commands">
+    <table class="cmds"><thead><tr><th>Command</th><th>Say it naturally</th><th>What it does</th></tr></thead><tbody id="cmds"></tbody></table>
+  </section>
+
+  <footer id="foot"></footer>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="dTitle" role="dialog">
+  <div class="d-head" id="dHead"></div>
+  <div class="d-body" id="dBody"></div>
+</aside>
+
+<script>
+const DATA = /*__ARMY_DATA__*/null;
+const GROUPS = ["Command", "Intelligence", "Build", "Protect", "Market", "Other"];
+const GCOLOR = { Command: "var(--g-command)", Intelligence: "var(--g-intelligence)", Build: "var(--g-build)", Protect: "var(--g-protect)", Market: "var(--g-market)", Other: "var(--g-other)" };
+const MODEL_LABEL = { opus: "Opus: judgment-heavy work", sonnet: "Sonnet: professional work", haiku: "Haiku: fast, mechanical work" };
+const PHRASES = { raise: "raise the army <mission>", "raise-all": "raise the entire army · all units on board", mode: "switch the army to lean / full mode", gates: "turn army safety gates on / off", status: "army status", map: "show me the army map" };
+const state = { mode: "lean", group: null, q: "" };
+const params = new URLSearchParams(location.search);
+const $ = (s) => document.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const byId = Object.fromEntries(DATA.units.map((u) => [u.id, u]));
+const modelOf = (u) => (state.mode === "full" ? u.full : u.lean);
+
+// ---------- tiny, safe markdown renderer ----------
+function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function inline(s) {
+  return esc(s)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+function md(src) {
+  const lines = src.replace(/\r/g, "").split("\n");
+  let html = "", i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^```/.test(l)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i++; html += "<pre><code>" + esc(buf.join("\n")) + "</code></pre>"; continue; }
+    const h = l.match(/^(#{1,4})\s+(.*)/);
+    if (h) { const n = Math.min(h[1].length, 3); html += `<h${n}>${inline(h[2])}</h${n}>`; i++; continue; }
+    if (/^\|/.test(l)) {
+      const rows = []; while (i < lines.length && /^\|/.test(lines[i])) rows.push(lines[i++]);
+      const cells = (r) => r.replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      const body = rows.filter((r) => !/^\|[\s:|-]+\|$/.test(r));
+      html += "<table>" + body.map((r, k) => "<tr>" + cells(r).map((c) => (k === 0 ? `<th>${inline(c)}</th>` : `<td>${inline(c)}</td>`)).join("") + "</tr>").join("") + "</table>";
+      continue;
+    }
+    if (/^\s*[-*]\s+/.test(l) || /^\s*\d+\.\s+/.test(l)) {
+      const ordered = /^\s*\d+\./.test(l); const items = [];
+      while (i < lines.length && (/^\s*([-*]|\d+\.)\s+/.test(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && items.length))) {
+        const t = lines[i].replace(/^\s*([-*]|\d+\.)\s+/, "");
+        if (/^\s{2,}\S/.test(lines[i]) && !/^\s*([-*]|\d+\.)\s+/.test(lines[i])) items[items.length - 1] += " " + t.trim();
+        else if (/^\s{2,}([-*]|\d+\.)/.test(lines[i]) && items.length) items[items.length - 1] += "<br>• " + inline(t);
+        else items.push(inline(t));
+        i++;
+      }
+      html += (ordered ? "<ol>" : "<ul>") + items.map((t) => "<li>" + t + "</li>").join("") + (ordered ? "</ol>" : "</ul>");
+      continue;
+    }
+    if (!l.trim()) { i++; continue; }
+    const buf = []; while (i < lines.length && lines[i].trim() && !/^(#|```|\||\s*[-*]\s|\s*\d+\.\s)/.test(lines[i])) buf.push(lines[i++]);
+    html += "<p>" + inline(buf.join(" ")) + "</p>";
+  }
+  return html;
+}
+
+// ---------- shared bits ----------
+function modelBadge(m) { const b = el("span", "model " + m, m); b.title = MODEL_LABEL[m] || m; return b; }
+function monoEl(u) { const m = el("div", "mono", u.mono); return m; }
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+  renderMap(); renderSim(); if (openUnit) openDrawer(openUnit, true);
+}
+
+// ---------- header, hero ----------
+function renderChrome() {
+  $("#ver").textContent = "v" + DATA.version;
+  const repo = DATA.repository || "https://github.com/omer-yehuda/plugins";
+  $("#repoLink").href = repo;
+  const specs = DATA.units.reduce((n, u) => n + u.specialists.length, 0);
+  const stats = [[DATA.units.length, "units"], [specs, "specialist playbooks"], [DATA.skills.length, "commands"], ["2", "model profiles"]];
+  for (const [n, t] of stats) { const s = el("div", "stat"); s.appendChild(el("b", null, String(n))); s.appendChild(el("span", null, t)); $("#stats").appendChild(s); }
+  const lg = $("#legend");
+  for (const m of ["opus", "sonnet", "haiku"]) { const s = el("span"); s.appendChild(modelBadge(m)); s.appendChild(document.createTextNode(MODEL_LABEL[m].split(": ")[1])); lg.appendChild(s); }
+  lg.appendChild(el("span", null, "Badges follow the Lean / Full switch. Click any unit to open its specialists and playbooks."));
+  $("#foot").innerHTML = `Generated from the plugin's own files · v${esc(DATA.version)} · ${esc(DATA.generated)} · <a href="${esc(repo)}" target="_blank" rel="noopener">Source on GitHub</a> · MIT License`;
+  document.querySelectorAll(".copy").forEach((b) => b.addEventListener("click", () => {
+    const t = document.getElementById(b.dataset.copy).textContent;
+    navigator.clipboard && navigator.clipboard.writeText(t).then(() => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1200); });
+  }));
+}
+
+// ---------- map ----------
+function unitMatches(u, q) {
+  if (!q) return { ok: true, specs: [] };
+  const hay = (u.id + " " + u.title + " " + u.description + " " + u.use).toLowerCase();
+  const specs = u.specialists.filter((s) => (s.name + " " + s.does + " " + (DATA.playbooks[s.playbook] || "")).toLowerCase().includes(q));
+  return { ok: hay.includes(q) || specs.length > 0, specs };
+}
+function renderMap() {
+  const root = $("#groups"); root.innerHTML = "";
+  let shown = 0;
+  for (const g of GROUPS) {
+    const units = DATA.units.filter((u) => u.group === g);
+    if (!units.length || (state.group && state.group !== g)) continue;
+    const sec = el("section", "group");
+    const h = el("h2"); const d = el("span", "dot"); d.style.background = GCOLOR[g]; h.appendChild(d); h.appendChild(document.createTextNode(g)); sec.appendChild(h);
+    const grid = el("div", "grid"); let n = 0;
+    for (const u of units) {
+      const m = unitMatches(u, state.q); if (!m.ok) continue; n++;
+      const c = el("button", "unit"); c.style.setProperty("--gc", GCOLOR[g]); c.setAttribute("aria-label", u.title + " unit");
+      const head = el("div", "unit-head"); head.appendChild(monoEl(u));
+      const t = el("div"); t.appendChild(el("div", "unit-title", u.title)); t.appendChild(el("div", "unit-id", "army:" + u.id)); head.appendChild(t);
+      head.appendChild(modelBadge(modelOf(u))); c.appendChild(head);
+      c.appendChild(el("div", "unit-use", u.use || u.description));
+      const foot = el("div", "unit-foot");
+      foot.appendChild(el("span", null, u.specialists.length ? u.specialists.length + " specialists" : "single-role unit"));
+      foot.appendChild(el("span", null, u.full !== u.lean ? "full: " + u.full : ""));
+      c.appendChild(foot);
+      if (m.specs.length) { const mm = el("div", "match"); m.specs.slice(0, 6).forEach((s) => mm.appendChild(el("span", null, s.name))); c.appendChild(mm); }
+      c.addEventListener("click", () => openDrawer(u.id));
+      grid.appendChild(c);
+    }
+    if (n) { sec.appendChild(grid); root.appendChild(sec); shown += n; }
+  }
+  $("#empty").classList.toggle("hidden", shown > 0);
+}
+function renderGroupChips() {
+  const box = $("#groupChips");
+  const mk = (label, g) => {
+    const b = el("button", "chip"); b.setAttribute("aria-pressed", String(state.group === g));
+    if (g) { const d = el("span", "dot"); d.style.background = GCOLOR[g]; b.appendChild(d); }
+    b.appendChild(document.createTextNode(label));
+    b.addEventListener("click", () => { state.group = g; box.innerHTML = ""; renderGroupChips(); renderMap(); });
+    box.appendChild(b);
+  };
+  mk("All", null);
+  GROUPS.filter((g) => DATA.units.some((u) => u.group === g)).forEach((g) => mk(g, g));
+}
+
+// ---------- drawer ----------
+let openUnit = null;
+function openDrawer(id, keepScroll) {
+  const u = byId[id]; if (!u) return; openUnit = id;
+  const head = $("#dHead"); head.innerHTML = ""; head.style.setProperty("--gc", GCOLOR[u.group]);
+  head.appendChild(monoEl(u));
+  const t = el("div"); const h = el("h2", null, u.title); h.id = "dTitle"; t.appendChild(h); t.appendChild(el("div", "unit-id", "army:" + u.id + " · " + u.group)); head.appendChild(t);
+  const x = el("button", "d-close", "×"); x.setAttribute("aria-label", "Close"); x.addEventListener("click", closeDrawer); head.appendChild(x);
+  const b = $("#dBody"); const top = b.scrollTop; b.innerHTML = "";
+  b.appendChild(el("p", null, u.description));
+  const kv = el("div", "kv");
+  const cell = (k, v) => { const d = el("div", null, k); const bb = el("b"); if (v instanceof Node) bb.appendChild(v); else bb.textContent = v; d.appendChild(bb); kv.appendChild(d); };
+  cell("Lean model", modelBadge(u.lean)); cell("Full model", modelBadge(u.full)); cell("Effort", u.effort || "default");
+  b.appendChild(kv);
+  if (u.procedure) { b.appendChild(el("h3", null, "Procedure")); const d = el("div", "md"); d.innerHTML = md(u.procedure); b.appendChild(d); }
+  if (u.doctrine) { b.appendChild(el("h3", null, "Unit doctrine")); const d = el("div", "md"); d.innerHTML = md(u.doctrine); b.appendChild(d); }
+  if (u.specialists.length) {
+    b.appendChild(el("h3", null, u.specialists.length + " specialists · click to read the playbook"));
+    for (const s of u.specialists) {
+      const det = el("details", "spec"); const sum = el("summary"); sum.appendChild(el("b", null, s.name)); sum.appendChild(el("span", null, s.does)); det.appendChild(sum);
+      const pb = el("div", "pb md"); pb.innerHTML = md(DATA.playbooks[s.playbook] || "_Playbook not found._");
+      const p = el("div", "pb-path", "doctrine/" + s.playbook + ".md"); pb.appendChild(p);
+      det.appendChild(pb);
+      if (state.q && (s.name + " " + s.does + " " + (DATA.playbooks[s.playbook] || "")).toLowerCase().includes(state.q)) det.open = true;
+      b.appendChild(det);
+    }
+  }
+  if (keepScroll) b.scrollTop = top; else b.scrollTop = 0;
+  $("#drawer").classList.add("open"); $("#drawer").setAttribute("aria-hidden", "false"); $("#scrim").classList.add("open");
+  if (!keepScroll) x.focus();
+}
+function closeDrawer() { openUnit = null; $("#drawer").classList.remove("open"); $("#drawer").setAttribute("aria-hidden", "true"); $("#scrim").classList.remove("open"); }
+
+// ---------- simulator ----------
+const SCENARIOS = [
+  { id: "feature", label: "Feature or code change", sub: "Build something in an existing codebase" },
+  { id: "product", label: "New product idea", sub: "From market research to a first version" },
+  { id: "release", label: "Release / ship it", sub: "Readiness checks before going live" },
+  { id: "bug", label: "Bug or incident", sub: "Something is broken" },
+  { id: "data", label: "Data question", sub: "What do the numbers really say?" },
+  { id: "launch", label: "Launch & growth", sub: "Get the product in front of people" },
+  { id: "turbo", label: "Raise the entire army", sub: "Every unit on board (turbo)" },
+];
+const OPTIONAL_IN_LEAN = ["treasury", "growth", "sales", "rnd"];
+function simPlan(s, t) {
+  const P = (name, units, note) => ({ name, units: units.filter(Boolean), note });
+  const why = {};
+  const W = (u, w) => { why[u] = w; return u; };
+  let phases = [];
+  if (s === "feature") phases = [
+    P("Recon", [W("recon", "maps the codebase once per commit")]),
+    P("Build", [W("engineering", "builder + unit tests + clean code"), t.ui && W("ux", "UX review and accessibility"), t.text && W("comms", "UI copy and error messages")], "parallel"),
+    P("Review", [t.sensitive && W("defense", "AppSec, secrets, dependencies"), W("engineering", "bug hunter re-reads the diff")], "after build"),
+    P("Inspect & learn", [W("inspector-general", "judges the result cold"), W("history", "updates lessons.md")]),
+  ];
+  if (s === "product") phases = [
+    P("Intelligence", [W("intel", "competitors, audience, market, strategist"), t.commercial && W("treasury", "pricing and cost model")], "parallel"),
+    P("Plan", [W("ops", "product manager, architect, risk analyst, devil's advocate"), W("legal", "licenses, privacy, trademarks")], "parallel"),
+    P("Build", [W("recon", "codebase map (if one exists)"), W("engineering", "builds the MVP with tests"), t.ui && W("ux", "flows, accessibility, design system"), t.text && W("comms", "UX copy and landing page")], "parallel"),
+    P("Protect & prepare", [t.sensitive && W("defense", "threat model, AppSec, secrets"), t.commercial && W("growth", "SEO/ASO, launch plan, analytics"), t.commercial && W("sales", "offer and support setup")], "parallel"),
+    P("Inspect & learn", [W("inspector-general", "acceptance against the PRD"), W("history", "lessons and mission log")]),
+  ];
+  if (s === "release") phases = [
+    P("Recon", [W("recon", "current state of the codebase")]),
+    P("Readiness", [W("defense", "hardening, secrets, supply chain"), W("legal", "policies, licenses, platform terms"), W("logistics", "CI/CD, rollback, observability"), t.text && W("comms", "release notes and store listing")], "parallel"),
+    P("Preflight", [W("inspector-general", "preflight + consistency checks")]),
+    P("Ship", [W("history", "mission log and lessons")], "the push or deploy waits at the safety gate for your approval"),
+  ];
+  if (s === "bug") phases = [
+    P("Recon", [W("recon", "codebase map")]),
+    P("Rescue", [W("rescue", "reproduce, isolate, root cause, regression test")]),
+    P("Fix", [W("engineering", "larger fixes, if needed"), t.sensitive && W("defense", "if the bug has a security angle")], "only if needed"),
+    P("Inspect & learn", [W("inspector-general", "verifies the fix"), W("history", "records the pitfall")]),
+  ];
+  if (s === "data") phases = [
+    P("Analyze", [W("data", "analyst + experiments: computed, not estimated")]),
+    P("Present", [W("data", "dashboard designer"), t.text && W("comms", "summary for stakeholders")]),
+    P("Inspect & learn", [W("inspector-general", "spot-checks the numbers"), W("history", "lessons")]),
+  ];
+  if (s === "launch") phases = [
+    P("Intelligence", [W("intel", "keywords, wargame, audience")]),
+    P("Plan & create", [W("growth", "launch plan, SEO/ASO, social, email, PR"), W("comms", "landing page, posts, press release"), t.commercial && W("treasury", "budget and forecast")], "parallel"),
+    P("Compliance", [W("legal", "advertising, consumer law, platform terms")]),
+    P("Inspect & learn", [W("inspector-general", "consistency and preflight"), W("history", "lessons")]),
+  ];
+  if (s === "turbo") {
+    const all = DATA.units.map((u) => u.id).filter((id) => !["recon", "inspector-general", "history"].includes(id));
+    phases = [
+      P("Recon", [W("recon", "codebase map")]),
+      P("All units, scoped briefs", all.map((id) => W(id, "scoped brief; replies NO FINDINGS if nothing is relevant")), "parallel; engineering may split into instances"),
+      P("Inspect & learn", [W("inspector-general", "judges everything cold"), W("history", "lessons")]),
+    ];
+  }
+  if (t.campaign) phases.splice(1, 0, P("Campaign setup", [W("ops", "operation order with checkpoints after each phase")], "work happens on branch army/<missionId>"));
+  return { phases, why };
+}
+function renderScenarios() {
+  const box = $("#scenarios");
+  SCENARIOS.forEach((s, i) => {
+    const l = el("label"); const r = el("input"); r.type = "radio"; r.name = "scen"; r.value = s.id; if (i === 0) r.checked = true;
+    r.addEventListener("change", renderSim); l.appendChild(r);
+    const t = el("div"); t.appendChild(el("b", null, s.label)); t.appendChild(el("small", null, s.sub)); l.appendChild(t); box.appendChild(l);
+  });
+  ["tSensitive", "tUI", "tText", "tCommercial", "tCampaign"].forEach((id) => document.getElementById(id).addEventListener("change", renderSim));
+}
+function renderSim() {
+  const s = (document.querySelector("input[name=scen]:checked") || {}).value || "feature";
+  const t = { sensitive: $("#tSensitive").checked, ui: $("#tUI").checked, text: $("#tText").checked, commercial: $("#tCommercial").checked, campaign: $("#tCampaign").checked };
+  const { phases, why } = simPlan(s, t);
+  $("#simPhrase").textContent = s === "turbo" ? "> raise the entire army <mission>" : "> raise the army <mission>";
+  const box = $("#phases"); box.innerHTML = "";
+  const engaged = new Set(); const models = { opus: 0, sonnet: 0, haiku: 0 };
+  phases.forEach((p, i) => {
+    if (!p.units.length) return;
+    const ph = el("div", "phase"); ph.appendChild(el("div", "pnum", String(box.children.length + 1)));
+    const right = el("div"); const h = el("h4", null, p.name); if (p.note) h.appendChild(el("small", null, p.note)); right.appendChild(h);
+    const ul = el("div", "ulist");
+    for (const id of p.units) {
+      const u = byId[id]; if (!u) continue;
+      const skipped = state.mode === "lean" && OPTIONAL_IN_LEAN.includes(id) && !((s === "launch" && id === "growth") || (s === "turbo"));
+      const c = el("button", "uchip" + (skipped ? " skipped" : "")); c.style.setProperty("--gc", GCOLOR[u.group]);
+      c.appendChild(monoEl(u));
+      const tx = el("div"); const nm = el("b", null, u.title + " "); tx.appendChild(nm); tx.appendChild(el("small", null, why[id] || u.use)); c.appendChild(tx);
+      c.appendChild(modelBadge(modelOf(u)));
+      c.addEventListener("click", () => openDrawer(id));
+      ul.appendChild(c);
+      if (!skipped && !engaged.has(id)) { engaged.add(id); models[modelOf(u)] = (models[modelOf(u)] || 0) + 1; }
+    }
+    right.appendChild(ul); ph.appendChild(right); box.appendChild(ph);
+  });
+  const sum = $("#simSummary"); sum.innerHTML = "";
+  const st = (n, label) => { const d = el("div", "stat"); d.appendChild(el("b", null, String(n))); d.appendChild(el("span", null, label)); sum.appendChild(d); };
+  st(engaged.size, "units engaged"); st(models.opus || 0, "on Opus"); st(models.sonnet || 0, "on Sonnet"); st(models.haiku || 0, "on Haiku");
+}
+
+// ---------- commands ----------
+function renderCommands() {
+  const tb = $("#cmds");
+  for (const s of DATA.skills) {
+    const tr = el("tr");
+    tr.appendChild(el("td", null, "/army:" + s.name + (s.hint ? " " + s.hint.replace(/"/g, "") : "")));
+    tr.appendChild(el("td", null, PHRASES[s.name] || ""));
+    tr.appendChild(el("td", null, s.description.replace(/\s*Use ONLY when[\s\S]*?(\.|$)\s*/i, " ").replace(/\s*Use only when[\s\S]*?(\.|$)\s*/i, " ").trim()));
+    tb.appendChild(tr);
+  }
+  const tr = el("tr"); tr.appendChild(el("td", null, "(any unit)")); tr.appendChild(el("td", null, "send the defense unit to audit the auth flow")); tr.appendChild(el("td", null, "Dispatches a single unit directly, without a full mission.")); tb.appendChild(tr);
+}
+
+// ---------- routing, theme ----------
+function route() {
+  const v = (location.hash || "#map").slice(1);
+  const view = ["map", "simulator", "how", "commands"].includes(v) ? v : "map";
+  document.querySelectorAll(".view").forEach((s) => s.classList.toggle("active", s.id === "view-" + view));
+  document.querySelectorAll("nav.tabs a").forEach((a) => a.setAttribute("aria-current", a.dataset.view === view ? "page" : "false"));
+}
+function applyTheme(t) { document.documentElement.dataset.theme = t; try { localStorage.setItem("army-theme", t); } catch (e) {} }
+
+(function init() {
+  let theme = params.get("theme");
+  if (!theme) { try { theme = localStorage.getItem("army-theme"); } catch (e) {} }
+  if (!theme) theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  applyTheme(theme);
+  $("#themeBtn").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+  if (params.get("mode") === "full") state.mode = "full";
+  document.querySelectorAll(".seg button").forEach((b) => { b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)); b.addEventListener("click", () => setMode(b.dataset.mode)); });
+  renderChrome(); renderGroupChips(); renderMap(); renderScenarios(); renderSim(); renderCommands();
+  if (params.get("scenario")) { const r = document.querySelector(`input[name=scen][value="${params.get("scenario")}"]`); if (r) { r.checked = true; renderSim(); } }
+  $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); renderMap(); });
+  if (params.get("q")) { $("#q").value = params.get("q"); state.q = params.get("q").toLowerCase(); renderMap(); }
+  $("#scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+  window.addEventListener("hashchange", route); route();
+  if (params.get("unit")) openDrawer(params.get("unit"));
+})();
+</script>
+</body>
+</html>
