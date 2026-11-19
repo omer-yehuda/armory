@@ -1,11 +1,11 @@
 """Scene types: quote, image (slow zoom), cta, plus the dispatcher."""
-from functools import lru_cache
-
-from PIL import Image, ImageDraw
+from PIL import Image
 
 from . import scenes as base
+from . import scenes_screen as screen
 from . import text as tx
 from .canvas import Ctx
+from .imgcache import load as _load, mask as _mask
 from .motion import clamp, ease_out_back, ease_out_cubic, pulse
 from .themes import lerp, on_accent
 
@@ -22,22 +22,6 @@ def quote(c: Ctx, sc, t: float) -> None:
     if au:
         tx.draw_block(c.d, au, c.cx, top + 180 * c.s + f.height + 50 * c.s, t - 0.2 - tx.reveal_end(len(sc.text.split()), 0.1),
                       c.pal["muted"], c.bg)
-
-
-@lru_cache(maxsize=8)
-def _load(path: str) -> Image.Image:
-    im = Image.open(path)
-    im.draft("RGB", (2400, 2400))
-    im = im.convert("RGB")
-    im.thumbnail((2400, 2400))
-    return im
-
-
-@lru_cache(maxsize=8)
-def _mask(size: tuple, radius: int) -> Image.Image:
-    m = Image.new("L", size, 0)
-    ImageDraw.Draw(m).rounded_rectangle((0, 0, size[0] - 1, size[1] - 1), radius=radius, fill=255)
-    return m
 
 
 def image(c: Ctx, sc, t: float) -> None:
@@ -80,7 +64,7 @@ def cta(c: Ctx, sc, t: float) -> None:
 
 
 DRAWERS = {"title": base.title, "bullets": base.bullets, "stat": base.stat, "compare": base.compare,
-           "quote": quote, "image": image, "cta": cta}
+           "quote": quote, "image": image, "screen": screen.screen, "link": screen.link, "cta": cta}
 
 
 def draw_scene(sc, t: float, size: tuple[int, int], decor: bool = True) -> Image.Image:

@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 from . import text as tx
-from .canvas import SAFE_BOTTOM, SAFE_LEFT, SAFE_RIGHT, SAFE_TOP, frame_size
+from .canvas import FORMATS, frame_size
 from .scenes_media import draw_scene
 
 TILE_SCALE = 0.3
@@ -12,10 +12,10 @@ PAD, LABEL_H = 14, 40
 SHEET_BG = (28, 28, 32)
 
 
-def _guides(img) -> None:
+def _guides(img, fmt: str = "short") -> None:
     w, h = img.size
-    ImageDraw.Draw(img).rectangle((SAFE_LEFT * w / 1080, SAFE_TOP * h / 1920,
-                                   w - SAFE_RIGHT * w / 1080, h - SAFE_BOTTOM * h / 1920),
+    (bw, bh), (left, right, top, bottom) = FORMATS[fmt]["size"], FORMATS[fmt]["safe"]
+    ImageDraw.Draw(img).rectangle((left * w / bw, top * h / bh, w - right * w / bw, h - bottom * h / bh),
                                   outline=(255, 70, 70), width=1)
 
 
@@ -28,9 +28,11 @@ def key_frames(sb):
     return out
 
 
-def contact_sheet(sb, out: Path, cols: int = 4, guides: bool = True) -> Path:
+def contact_sheet(sb, out: Path, cols: int | None = None, guides: bool = True) -> Path:
     tiles = key_frames(sb)
-    tw, th = frame_size(TILE_SCALE)
+    wide = sb.format == "wide"
+    cols = cols or (3 if wide else 4)
+    tw, th = frame_size(TILE_SCALE * (0.6 if wide else 1), sb.format)
     cols = max(1, min(cols, len(tiles)))
     rows = -(-len(tiles) // cols)
     sheet = Image.new("RGB", (PAD + cols * (tw + PAD), PAD + rows * (th + LABEL_H + PAD)), SHEET_BG)
@@ -39,7 +41,7 @@ def contact_sheet(sb, out: Path, cols: int = 4, guides: bool = True) -> Path:
         x, y = PAD + (i % cols) * (tw + PAD), PAD + (i // cols) * (th + LABEL_H + PAD)
         tile = draw_scene(sc, t, (tw, th))
         if guides:
-            _guides(tile)
+            _guides(tile, sb.format)
         sheet.paste(tile, (x, y))
         d.text((x, y + th + 8), label, font=lf, fill=(235, 235, 240))
     out.parent.mkdir(parents=True, exist_ok=True)

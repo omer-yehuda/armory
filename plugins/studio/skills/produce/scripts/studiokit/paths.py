@@ -8,6 +8,7 @@ SKILL_DIR = Path(__file__).resolve().parents[2]
 PLUGIN_DIR = SKILL_DIR.parents[1]
 FONT = SKILL_DIR / "assets" / "fonts" / "Rubik.ttf"
 REQUIREMENTS = PLUGIN_DIR / "requirements.txt"
+REQUIREMENTS_VOICE = PLUGIN_DIR / "requirements-voice.txt"
 
 
 def home() -> Path:

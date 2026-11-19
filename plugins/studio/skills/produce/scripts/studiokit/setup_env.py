@@ -3,7 +3,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from .paths import FFMPEG_HELP, REQUIREMENTS, find_tool, venv_dir, venv_python
+from .paths import FFMPEG_HELP, REQUIREMENTS, REQUIREMENTS_VOICE, find_tool, venv_dir, venv_python
 
 
 class SetupError(RuntimeError):
@@ -30,15 +30,32 @@ def confirmed(yes: bool, stdin=sys.stdin, ask=input) -> bool:
     return ask("Proceed? [y/N] ").strip().lower() in ("y", "yes")
 
 
-def plan() -> str:
-    pins = ", ".join(t for t in REQUIREMENTS.read_text().split() if "==" in t)
-    return (f"Studio setup will:\n  1. create a private Python venv at {venv_dir()}\n"
-            f"  2. pip install pinned, hash-checked wheels (no source builds) from PyPI into that venv only: {pins}\n"
-            "It will not touch your global Python, install system packages, or contact anything else.")
+def _pins(req: Path) -> str:
+    return ", ".join(t for t in req.read_text().split() if "==" in t)
 
 
-def setup(yes: bool, log=print, stdin=sys.stdin, ask=input) -> int:
-    log(plan())
+def plan(voice: bool = False) -> str:
+    text = (f"Studio setup will:\n  1. create a private Python venv at {venv_dir()}\n"
+            f"  2. pip install pinned, hash-checked wheels (no source builds) from PyPI into that venv only: "
+            f"{_pins(REQUIREMENTS)}\n")
+    if voice:
+        from .models import MODELS, models_dir
+        mb = sum(size for _, size in MODELS.values()) >> 20
+        text += (f"  3. for AI narration: pip install pinned {_pins(REQUIREMENTS_VOICE)} (and their dependencies) "
+                 f"into the same venv\n  4. download the Kokoro voice model ({mb} MB, SHA-256 verified) from "
+                 f"github.com/thewh1teagle/kokoro-onnx into {models_dir()}\n")
+    return text + "It will not touch your global Python or install system packages."
+
+
+def _pip(py: Path, args: list[str]) -> None:
+    r = subprocess.run([str(py), "-m", "pip", "install", "--disable-pip-version-check", "-q", "--no-input", *args],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SetupError(f"pip failed (usually no network access to pypi.org):\n{r.stderr[-1500:]}")
+
+
+def setup(yes: bool, log=print, stdin=sys.stdin, ask=input, voice: bool = False) -> int:
+    log(plan(voice))
     if not confirmed(yes, stdin, ask):
         raise SetupError("not confirmed, nothing was installed (pass --yes after the user agrees)")
     py = venv_python()
@@ -46,10 +63,15 @@ def setup(yes: bool, log=print, stdin=sys.stdin, ask=input) -> int:
         log(f"creating venv at {venv_dir()}")
         venv_dir().parent.mkdir(parents=True, exist_ok=True)
         subprocess.run([sys.executable, "-m", "venv", str(venv_dir())], check=True)
-    r = subprocess.run([str(py), "-m", "pip", "install", "--disable-pip-version-check", "-q",
-                        "--require-hashes", "--only-binary=:all:", "--no-input", "-r", str(Path(REQUIREMENTS))], capture_output=True, text=True)
-    if r.returncode != 0:
-        raise SetupError(f"pip failed (usually no network access to pypi.org):\n{r.stderr[-1500:]}")
+    _pip(py, ["--require-hashes", "--only-binary=:all:", "-r", str(Path(REQUIREMENTS))])
+    if voice:
+        from .models import MODELS, ModelError, fetch
+        _pip(py, ["-r", str(Path(REQUIREMENTS_VOICE))])
+        try:
+            for name in MODELS:
+                fetch(name, log=log)
+        except ModelError as e:
+            raise SetupError(str(e)) from e
     ok, msg = ffmpeg_status()
     log(msg)
     log(f"python packages ready in {venv_dir()}")

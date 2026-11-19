@@ -99,7 +99,7 @@
     {
       "name": "studio",
       "source": "./plugins/studio",
-      "description": "A film crew of AI agents that turns a topic into a finished vertical explainer video: writer, director, test-screening critic and editor produce a 1080x1920 kinetic-typography MP4 with captions and upload metadata. Local rendering with Pillow and ffmpeg.",
+      "description": "A film crew of AI agents that turns a topic into a finished explainer video, vertical (1080x1920) or wide (1920x1080): writer, director, test-screening critic and editor produce a kinetic-typography MP4 with captions, optional free local AI narration and upload metadata. The trend desk films a trending tool from real screenshots and makes a wide video plus a Short. Local rendering with Pillow and ffmpeg.",
       "category": "creative",
       "keywords": [
         "video",

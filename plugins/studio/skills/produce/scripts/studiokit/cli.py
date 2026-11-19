@@ -1,4 +1,4 @@
-"""studio.py commands: init, doctor, setup, check, preview, render."""
+"""studio.py commands: init, doctor, setup, check, preview, render, voice, audiocheck."""
 import argparse
 import sys
 from datetime import date
@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .ffmpeg import FfmpegError
 from .inputfile import InputFileError, discard, prep, read_prep_file
+from .models import ModelError
 from .setup_env import SetupError
 from .safety import git_tracked, new_dir, safe_file, safe_out_dir, slugify
 from .spec import SpecError, load
@@ -56,13 +57,38 @@ def cmd_doctor(a) -> int:
     except ImportError:
         pil = None
     ok, msg = ffmpeg_status()
-    print(f"python {sys.version.split()[0]}\n{pil or 'Pillow: MISSING (run setup)'}\n{msg}")
+    from .models import voice_ready
+    voice = "voice: ready (Kokoro)" if voice_ready() else "voice: not set up (optional: setup --voice)"
+    print(f"python {sys.version.split()[0]}\n{pil or 'Pillow: MISSING (run setup)'}\n{msg}\n{voice}")
     return 0 if (pil and ok) else (EXIT_NOT_SETUP if not pil else EXIT_NO_FFMPEG)
 
 
 def cmd_setup(a) -> int:
     from .setup_env import setup
-    return setup(a.yes)
+    return setup(a.yes, voice=a.voice)
+
+
+def cmd_voice(a) -> int:
+    """Narrate every scene's `say` line, fit the scene durations to it and point `audio` at voice.wav."""
+    from .voice import narrate
+    load(a.storyboard)                       # refuse to narrate an invalid storyboard
+    res = narrate(Path(a.storyboard), a.voice, a.speed)
+    sb, warns = load(a.storyboard)           # the new durations must still pass the checks
+    print(f"voice: {res['audio']}\nlines: {res['lines']}\nlength: {sb.duration:.1f}s")
+    for w in warns:
+        print(f"  warning: {w}")
+    return 0
+
+
+def cmd_audiocheck(a) -> int:
+    """Quiet pauses and no clicks: exit 1 if the final audio fails."""
+    from .audio import check
+    res = check(Path(a.media), Path(a.lines) if a.lines else None)
+    print(f"{'PASS' if res['ok'] else 'FAIL'}: {res['seconds']}s, loudest pause {res['pause_dbfs']} dBFS, "
+          f"{res['clicks_per_min']} clicks/min")
+    for p in res["problems"]:
+        print(f"  - {p}")
+    return 0 if res["ok"] else EXIT_INVALID
 
 
 def cmd_check(a) -> int:
@@ -119,6 +145,14 @@ def parser() -> argparse.ArgumentParser:
     sub.add_parser("doctor", help="report Python, Pillow and ffmpeg status")
     s = sub.add_parser("setup", help="create the private venv and install pinned Pillow (asks first)")
     s.add_argument("--yes", action="store_true", help="the user already agreed")
+    s.add_argument("--voice", action="store_true", help="also set up AI narration (Kokoro, ~120 MB)")
+    s = sub.add_parser("voice", help="AI narration from each scene's 'say'; fits durations, writes voice.wav")
+    s.add_argument("storyboard")
+    s.add_argument("--voice", default="am_michael", help="Kokoro voice id (default am_michael)")
+    s.add_argument("--speed", type=float, default=1.12, help="speech speed, 0.8-1.4 (default 1.12)")
+    s = sub.add_parser("audiocheck", help="check a rendered video or wav: quiet pauses, no clicks")
+    s.add_argument("media")
+    s.add_argument("--lines", help="voice.lines.json from the voice step (finds the pauses)")
     s = sub.add_parser("check", help="validate a storyboard (exit 1 if invalid)")
     s.add_argument("storyboard")
     s.add_argument("--strict", action="store_true", help="treat warnings as failures")
@@ -126,7 +160,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("storyboard")
     s.add_argument("--out")
     s.add_argument("--no-guides", action="store_true", help="hide the safe-area outline")
-    s = sub.add_parser("render", help="1080x1920 H.264 MP4 + captions.srt + metadata.md")
+    s = sub.add_parser("render", help="H.264 MP4 (1080x1920 or 1920x1080) + captions.srt + metadata.md")
     s.add_argument("storyboard")
     s.add_argument("--out", help="output folder, inside the storyboard folder (default: the storyboard folder)")
     s.add_argument("--scale", type=float, default=1.0, help="0.1-1.0 of full size (tests use 0.25)")
@@ -138,7 +172,7 @@ def parser() -> argparse.ArgumentParser:
 
 
 COMMANDS = {"prep": cmd_prep, "init": cmd_init, "doctor": cmd_doctor, "setup": cmd_setup, "check": cmd_check,
-            "preview": cmd_preview, "render": cmd_render}
+            "preview": cmd_preview, "render": cmd_render, "voice": cmd_voice, "audiocheck": cmd_audiocheck}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -146,11 +180,17 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "render" and not 0.1 <= a.scale <= 1.0:
         print("ERROR: --scale must be between 0.1 and 1.0", file=sys.stderr)
         return EXIT_ERROR
+    if a.cmd == "voice" and not 0.8 <= a.speed <= 1.4:
+        print("ERROR: --speed must be between 0.8 and 1.4", file=sys.stderr)
+        return EXIT_ERROR
     try:
         return COMMANDS[a.cmd](a)
     except SpecError as e:
         print("ERROR:\n" + str(e), file=sys.stderr)
         return EXIT_INVALID
-    except (FfmpegError, SetupError, InputFileError, OSError, ValueError) as e:
+    except ModuleNotFoundError as e:
+        print(f"ERROR: {e.name} is missing. Ask the user, then run `studio.py setup --voice --yes`.", file=sys.stderr)
+        return EXIT_NOT_SETUP
+    except (FfmpegError, SetupError, InputFileError, ModelError, OSError, ValueError) as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return EXIT_NO_FFMPEG if "ffmpeg was not found" in str(e) else EXIT_ERROR

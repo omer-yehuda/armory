@@ -71,7 +71,7 @@ To update later, run `/plugin marketplace update omer-plugins`.
 | [**customs**](plugins/customs/README.md) | Border control for skills and plugins. Scans a local folder, GitHub repo or installed plugin before you trust it (remote code, obfuscation, hidden Unicode, prompt injection, credential access, exfiltration, wildcard hooks) and stamps a passport: CLEARED, SECONDARY INSPECTION or DENIED. A first filter, not a guarantee. | 1.0.0 |
 | [**er**](plugins/er/README.md) | Bug ER. A triage nurse, attending, surgeon and discharge check fix a bug with a regression test first and the smallest possible incision, under a hard budget (default 3 files, 40 lines). | 1.0.0 |
 | [**atc**](plugins/atc/README.md) | ATC: air traffic control for parallel Claude sessions. Sessions claim lanes (file globs), a hook asks before one session edits another's lane, and `/atc:clear` splits a big task across non-overlapping parallel pilots in worktrees. | 1.0.0 |
-| [**studio**](plugins/studio/README.md) | An AI film crew. Writer, director, test-screening critic and editor turn a topic into a 1080x1920 kinetic-typography explainer MP4 with captions and upload metadata, rendered locally with Pillow and ffmpeg. | 1.0.0 |
+| [**studio**](plugins/studio/README.md) | An AI film crew. Writer, director, test-screening critic and editor turn a topic into a vertical or wide kinetic-typography explainer MP4 with captions, optional free local AI narration and upload metadata. The trend desk films a trending tool from real screenshots and makes a wide video plus a Short. Rendered locally with Pillow and ffmpeg. | 1.1.0 |
 | [**critics**](plugins/critics/README.md) | The Critics' Table. Three independent critics (presentation, kitchen, recipe) taste your work, a head critic awards up to 3 stars with a short fix-before-serving list, and a re-taste shows the stars go up. | 1.0.0 |
 
 ---
@@ -196,7 +196,8 @@ plugins/
   court/ customs/ er/ atc/ critics/
     skills/ · agents/ · scripts/ (zero-dependency Node) · tests/ (node:test)
   studio/
-    skills/produce/               SKILL.md · examples · renderer (scripts/studiokit, Pillow + ffmpeg)
+    skills/produce/               SKILL.md · examples · renderer (scripts/studiokit, Pillow + ffmpeg, Kokoro voice)
+    skills/trend/                 SKILL.md · trend desk: real footage, wide video + Short
     tests/                        pytest suite
 docs/                             Live site (GitHub Pages): interactive map + screenshots
 evals/                            Each plugin vs. plain Claude on fixed missions

@@ -1,6 +1,6 @@
 ---
 name: produce
-description: Studio showrunner. Produces a vertical (1080x1920) kinetic-typography explainer video from a topic using an AI film crew (a writer, a director and a screener, plus the showrunner session) and a local Pillow + ffmpeg renderer. Use ONLY when the user says "studio, make a video about ...", "produce an explainer video", or runs /studio:produce. Not for cartoon stories with characters (that is toon-shorts).
+description: Studio showrunner. Produces a vertical (1080x1920) or wide (1920x1080) kinetic-typography explainer video from a topic using an AI film crew (a writer, a director and a screener, plus the showrunner session) and a local Pillow + ffmpeg renderer. Use ONLY when the user says "studio, make a video about ...", "produce an explainer video", or runs /studio:produce. Not for cartoon stories with characters (that is toon-shorts). For a video about a trending tool made from real screenshots, use /studio:trend.
 argument-hint: "<topic>"
 ---
 
@@ -27,7 +27,7 @@ Never use `pip install`, `--break-system-packages` or any other install route.
 
 1. **Length:** 30-40 s (Recommended) · 45-60 s
 2. **Look:** Light and easy, alternating light and dark (Recommended) · Mostly dark · Mostly light
-3. **Voice:** Captions only (Recommended) · I will give you an audio file
+3. **Voice:** Captions only (Recommended) · AI narration (free Kokoro voice, runs locally) · I will give you an audio file
 4. **Language:** English (default) · Other (note: right-to-left text is not supported yet)
 
 Then create the production folder without putting any user text in a command. First run `S prep`: it creates a fresh private temp folder and prints one file path. With the Write tool write the topic (plain text, as the user said it) to that exact printed path, never any other, and run `S init --title-file <the printed path>`. The script accepts only a file inside its own prep folder, refuses symlinks, and derives a safe folder name ([a-z0-9-], at most 48 characters), keeps the text as `topic.txt` inside the folder and deletes the input file. Use the printed folder as `<prod>`. It is git-ignored by `.studio/.gitignore`. If it fails because `.studio` is tracked in git or is a symlink, stop and tell the user.
@@ -44,12 +44,11 @@ Dispatch the `director` agent with `model: "sonnet"`: "read `<prod>/script.md`, 
 
 If the user has images to show, put them in `<prod>` and tell the director their file names. Studio never downloads images.
 
-## Step 4: Voice (optional, honest version)
+## Step 4: Voice (optional)
 
-Studio has no voice engine of its own.
+- **AI narration:** run `S doctor`. If it says `voice: not set up`, ask with **AskUserQuestion**: "Set up AI narration?" Options: **Yes (Recommended)** (pinned kokoro-onnx in Studio's private venv plus a ~120 MB SHA-256 verified voice model from github.com/thewh1teagle/kokoro-onnx) or **No, captions only**. Only on Yes run `S setup --voice --yes`. Then make sure every scene has a `say` line (the director writes them; you may edit the JSON) and run `S voice "<prod>/storyboard.json"` (default voice `am_michael`, `--speed 1.12`). It sets each scene's duration to its line, writes `voice.wav` (mastered to -14 LUFS) and `voice.lines.json`, and points `audio` at it. Render without `--fit-audio`. After the render run `S audiocheck "<prod>/video.mp4" --lines "<prod>/voice.lines.json"` and report a FAIL.
 - **Captions only (default):** nothing to do. The video carries the words on screen and `captions.srt` is written for upload.
 - **User audio file:** ask the user to put it in `<prod>` or give its path. Write that path (one line) to `<prod>/audio-path.txt` with the Write tool and use it in Step 6 with `--audio-path-file "<prod>/audio-path.txt" --fit-audio`. Scene timings are stretched to the audio length (only if within 0.6x to 1.8x; otherwise ask the user to re-record at the target pace).
-- **AI narration:** Studio does not generate it. If the user wants it, they can make a voice file with another tool (for example toon-shorts, if they already use it) and give you the file as above.
 
 ## Step 5: Editor and screening (max 2 loops)
 
