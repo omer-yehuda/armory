@@ -1,0 +1,14 @@
+{
+  "name": "court",
+  "displayName": "Code Court",
+  "version": "1.0.0",
+  "description": "Put any technical decision on trial. Opposing counsel argue each option from shared evidence, a judge who never saw your opinion rules, and the verdict names the conditions that would overturn it.",
+  "author": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "repository": "https://github.com/omer-yehuda/plugins",
+  "license": "MIT",
+  "keywords": ["decisions", "architecture", "adr", "subagents", "debate", "trade-offs"],
+  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/court"
+}

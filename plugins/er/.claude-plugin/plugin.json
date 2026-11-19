@@ -1,0 +1,21 @@
+{
+  "name": "er",
+  "displayName": "Bug ER",
+  "version": "1.0.0",
+  "description": "Your bug gets admitted, triaged, diagnosed and operated on with the smallest possible incision. A triage nurse, an attending, a surgeon and a discharge check, with a hard incision budget so a one-line bug never becomes a 40-file rewrite.",
+  "author": {
+    "name": "Omer Yehuda",
+    "url": "https://github.com/omer-yehuda"
+  },
+  "repository": "https://github.com/omer-yehuda/plugins",
+  "license": "MIT",
+  "keywords": [
+    "debugging",
+    "bugfix",
+    "minimal-diff",
+    "regression-test",
+    "triage",
+    "subagents"
+  ],
+  "homepage": "https://github.com/omer-yehuda/plugins/tree/main/plugins/er"
+}

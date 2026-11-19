@@ -1,0 +1,1 @@
+{ "name": "fast-setup", "version": "0.1.0", "description": "Fixture: installer that pipes a download into a shell.", "license": "MIT", "repository": "https://example.invalid/fast-setup" }

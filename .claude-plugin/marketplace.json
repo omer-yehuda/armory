@@ -5,7 +5,7 @@
     "url": "https://github.com/omer-yehuda"
   },
   "metadata": {
-    "description": "A curated marketplace of production-grade Claude Code plugins by Omer Yehuda: Army (multi-agent orchestration with specialist units, cost-aware routing and safety gates) and Toon Shorts (animated short creator: story to voiced, captioned cartoon MP4)."
+    "description": "A curated marketplace of tested Claude Code plugins by Omer Yehuda: Army (multi-agent orchestration), Toon Shorts (animated shorts), Code Court (decisions on trial), Customs (a first-filter scan of skills before you install), Bug ER (minimal-incision bug fixes), ATC (air traffic control for parallel sessions), Studio (AI film crew for explainer videos) and The Critics' Table (3-star review)."
   },
   "plugins": [
     {
@@ -37,6 +37,92 @@
         "storytelling",
         "tts",
         "hebrew"
+      ]
+    },
+    {
+      "name": "court",
+      "source": "./plugins/court",
+      "description": "Put any technical decision on trial. Opposing counsel argue each option from shared evidence, a judge who never saw your opinion rules, and the verdict names the conditions that would overturn it.",
+      "category": "productivity",
+      "keywords": [
+        "decisions",
+        "architecture",
+        "adr",
+        "subagents",
+        "debate",
+        "trade-offs"
+      ]
+    },
+    {
+      "name": "customs",
+      "source": "./plugins/customs",
+      "description": "Border control for skills and plugins: every skill needs a passport. Scans a plugin or skill (local path, GitHub URL or installed plugin) before you trust it and stamps it CLEARED, SECONDARY INSPECTION or DENIED. A first filter, not a guarantee.",
+      "category": "security",
+      "keywords": [
+        "security",
+        "supply-chain",
+        "skills",
+        "plugins",
+        "audit",
+        "scanner",
+        "prompt-injection"
+      ]
+    },
+    {
+      "name": "er",
+      "source": "./plugins/er",
+      "description": "Your bug gets admitted, triaged, diagnosed and operated on with the smallest possible incision. A triage nurse, an attending, a surgeon and a discharge check, with a hard incision budget so a one-line bug never becomes a 40-file rewrite.",
+      "category": "development",
+      "keywords": [
+        "debugging",
+        "bugfix",
+        "minimal-diff",
+        "regression-test",
+        "triage",
+        "subagents"
+      ]
+    },
+    {
+      "name": "atc",
+      "source": "./plugins/atc",
+      "description": "Air traffic control for parallel Claude Code sessions: claim lanes, avoid collisions. Sessions claim lanes (file globs); a hook asks before one session edits a file in another's lane, and a clearance skill splits a big task across non-overlapping parallel pilots. Coordination, not a sandbox.",
+      "category": "productivity",
+      "keywords": [
+        "parallel",
+        "subagents",
+        "worktrees",
+        "coordination",
+        "file-locking",
+        "multi-session"
+      ]
+    },
+    {
+      "name": "studio",
+      "source": "./plugins/studio",
+      "description": "A film crew of AI agents that turns a topic into a finished vertical explainer video: writer, director, test-screening critic and editor produce a 1080x1920 kinetic-typography MP4 with captions and upload metadata. Local rendering with Pillow and ffmpeg.",
+      "category": "creative",
+      "keywords": [
+        "video",
+        "shorts",
+        "explainer",
+        "motion-graphics",
+        "kinetic-typography",
+        "agents",
+        "captions"
+      ]
+    },
+    {
+      "name": "critics",
+      "source": "./plugins/critics",
+      "description": "Three independent critics (presentation, kitchen, recipe) taste your work before it ships, then a head critic awards up to 3 stars with a short fix-before-serving list. Re-taste after fixes to see stars go up.",
+      "category": "development",
+      "keywords": [
+        "code-review",
+        "review",
+        "quality",
+        "ux",
+        "performance",
+        "subagents"
       ]
     }
   ]
