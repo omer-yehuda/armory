@@ -88,3 +88,38 @@ def test_find_ffmpeg(monkeypatch):
 def test_sfx_shapes():
     assert len(audio.whoosh(0.2)) == int(0.2 * SR)
     assert np.abs(audio.pop()).max() <= 0.61
+
+
+def _max_step(x: np.ndarray) -> float:
+    return float(np.abs(np.diff(x)).max())
+
+
+def test_sfx_start_and_end_silent():
+    for s in (audio.whoosh(), audio.pop()):
+        assert abs(s[0]) < 1e-3 and abs(s[-1]) < 1e-3
+
+
+def test_music_loop_seam_has_no_click():
+    # 0.37 s of a 220 Hz tone does not end where it starts: a hard loop would jump
+    t = np.arange(int(0.37 * SR)) / SR
+    music = (np.sin(2 * np.pi * 220 * t) * 0.8).astype(np.float32)
+    hard = np.tile(music, 4)
+    bed = audio.music_bed(music, len(hard), fade_in=0.0)
+    smooth = 2 * np.pi * 220 / SR * 0.8 * 1.5          # largest step a clean 220 Hz tone can make, with headroom
+    assert _max_step(hard) > 3 * smooth
+    assert _max_step(bed) < smooth
+
+
+def test_music_bed_fades_in_and_drops_dc_and_rumble():
+    music = np.full(SR, 0.5, np.float32) + (np.sin(np.arange(SR) * 2 * np.pi * 30 / SR) * 0.3).astype(np.float32)
+    bed = audio.music_bed(music, 3 * SR)
+    assert abs(bed[0]) < 1e-4
+    assert abs(float(bed[SR:].mean())) < 0.01             # DC offset removed
+    assert np.sqrt(np.mean(bed[SR:] ** 2)) < 0.3 * 0.7 * 0.5  # 30 Hz rumble strongly reduced
+    assert len(audio.music_bed(np.zeros(0, np.float32), 10)) == 10
+
+
+def test_mix_has_no_clicks_at_voice_edges():
+    voice = np.full(SR // 2, 0.5, np.float32)             # a clip that starts and stops on a loud sample
+    out = audio.mix(voice, [], [], 1.0, None, sfx=False)
+    assert _max_step(out) < 0.01
