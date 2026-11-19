@@ -31,6 +31,7 @@ Run this in Claude Code (v2.1.275 or later):
 /plugin install atc --marketplace omer-yehuda/plugins
 /plugin install studio --marketplace omer-yehuda/plugins
 /plugin install critics --marketplace omer-yehuda/plugins
+/plugin install skill-installer --marketplace omer-yehuda/plugins
 ```
 
 Install only the ones you want.
@@ -42,7 +43,7 @@ Install only the ones you want.
 /plugin marketplace add omer-yehuda/plugins
 /plugin install army@omer-plugins
 /plugin install toon-shorts@omer-plugins
-/plugin install court@omer-plugins   # same pattern for customs, er, atc, studio, critics
+/plugin install court@omer-plugins   # same pattern for customs, er, atc, studio, critics, skill-installer
 ```
 </details>
 
@@ -57,6 +58,7 @@ admit this bug: checkout total is off by one cent
 /atc:claim src/billing/** (invoice refactor)
 studio, make a video about what a Claude skill is
 let the critics taste it
+install the pdf skill from anthropics/skills
 ```
 
 To update later, run `/plugin marketplace update omer-plugins`.
@@ -73,6 +75,7 @@ To update later, run `/plugin marketplace update omer-plugins`.
 | [**atc**](plugins/atc/README.md) | ATC: air traffic control for parallel Claude sessions. Sessions claim lanes (file globs), a hook asks before one session edits another's lane, and `/atc:clear` splits a big task across non-overlapping parallel pilots in worktrees. | 1.0.0 |
 | [**studio**](plugins/studio/README.md) | An AI film crew. Writer, director, test-screening critic and editor turn a topic into a 1080x1920 kinetic-typography explainer MP4 with captions and upload metadata, rendered locally with Pillow and ffmpeg. | 1.0.0 |
 | [**critics**](plugins/critics/README.md) | The Critics' Table. Three independent critics (presentation, kitchen, recipe) taste your work, a head critic awards up to 3 stars with a short fix-before-serving list, and a re-taste shows the stars go up. | 1.0.0 |
+| [**skill-installer**](plugins/skill-installer/README.md) | Skill Installer. Browse a skills repo or a plugin marketplace and install a skill from GitHub into `~/.claude/skills` or the project: dry run, quick risk check, atomic copy, backup on update, "did you mean" for typos. Adapted from OpenAI's Apache-2.0 Codex skill-installer. | 1.0.0 |
 
 ---
 
@@ -195,6 +198,10 @@ plugins/
     CHANGELOG.md
   court/ customs/ er/ atc/ critics/
     skills/ · agents/ · scripts/ (zero-dependency Node) · tests/ (node:test)
+  skill-installer/
+    skills/                       install · browse
+    scripts/si.js                 Zero-dependency installer (GitHub tree API + git fallback)
+    NOTICE                        Credit: adapted from OpenAI's Apache-2.0 Codex skill-installer
   studio/
     skills/produce/               SKILL.md · examples · renderer (scripts/studiokit, Pillow + ffmpeg)
     tests/                        pytest suite
@@ -228,7 +235,7 @@ Plugin names must not start with `claude-` or `anthropic-`, because those prefix
 
 ```bash
 node --test plugins/army/tests/*.test.js               # gate + lifecycle tests
-for p in court customs er atc critics; do node --test plugins/$p/tests/*.test.js; done
+for p in court customs er atc critics skill-installer; do node --test plugins/$p/tests/*.test.js; done
 (cd plugins/studio && python -m pytest)       # studio renderer tests (pip install -r requirements-dev.txt)
 node tools/sync-army.js                       # regenerate files from units.json and standing orders
 node evals/run.js                             # plugins vs. plain Claude (needs a signed-in claude CLI)
@@ -241,6 +248,6 @@ CI runs all of the above on every push and pull request.
 
 ## License
 
-[MIT](LICENSE) © 2026 Omer Yehuda
+[MIT](LICENSE) © 2026 Omer Yehuda, except `plugins/skill-installer` (Apache-2.0, adapted from OpenAI's Codex skill-installer; see its NOTICE).
 
 Independent community project. Not affiliated with, sponsored or endorsed by Anthropic. Claude and Claude Code are trademarks of Anthropic, PBC.
