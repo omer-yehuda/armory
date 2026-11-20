@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Army · Command Center</title>
-<meta name="description" content="Army for Claude Code: say “raise the army” and a Chief of Staff briefs you once, then commands 18 specialist units as subagents.">
+<meta name="description" content="Army for Claude Code: say “raise the army” and a Chief of Staff briefs you once, then commands 18 specialist units as subagents. Part of a free marketplace of 9 tested Claude Code plugins.">
 <meta name="theme-color" content="#161e18">
 <style>
 /*__FONTS__*/
@@ -25,6 +25,11 @@ button { font: inherit; color: inherit; }
 .wrap { max-width: 1320px; margin: 0 auto; padding: 0 28px; }
 
 /* ── top bar ── */
+.mkt { background: #0f1511; border-bottom: 1px solid var(--contour); font: 600 13px var(--ui); color: var(--dim); }
+.mkt .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 34px; padding-top: 6px; padding-bottom: 6px; }
+.mkt b { color: var(--brass); letter-spacing: .04em; }
+.mkt a { color: var(--bone); text-decoration: none; }
+.mkt a:hover { text-decoration: underline; }
 .bar { position: sticky; top: 0; z-index: 30; background: rgba(22, 30, 24, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--contour); }
 .bar .wrap { display: flex; align-items: center; gap: 26px; height: 60px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--bone); }
@@ -270,6 +275,9 @@ footer p { margin: 4px 0; }
 </style>
 </head>
 <body>
+<div class="mkt" role="note" aria-label="Plugin marketplace">
+  <div class="wrap"><b>MARKETPLACE</b><span>Army is 1 of 9 free, tested Claude Code plugins: Army · Toon Shorts · Code Court · Customs · Bug ER · ATC · Studio · Critics' Table · Skill Installer</span><a href="https://github.com/omer-yehuda/plugins#plugin-catalog" target="_blank" rel="noopener">See all 9 &rarr;</a></div>
+</div>
 <header class="bar">
   <div class="wrap">
     <a class="brand" href="#ops" aria-label="Army, back to top">
